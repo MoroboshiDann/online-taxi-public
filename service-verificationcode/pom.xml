@@ -13,9 +13,11 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>service-verificationcode</name>
     <description>service-verificationcode</description>
+
     <properties>
-        <java.version>17</java.version>
+        <java.version>8</java.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -31,17 +33,13 @@
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
-            <version>2021.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.moroboshidan</groupId>
+            <artifactId>internal-common</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

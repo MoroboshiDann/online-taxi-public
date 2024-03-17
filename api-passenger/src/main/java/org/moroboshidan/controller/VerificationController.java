@@ -1,5 +1,6 @@
 package org.moroboshidan.controller;
 
+import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.request.VerificationCodeDTO;
 import org.moroboshidan.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ public class VerificationController {
     @Autowired
     private VerificationCodeService verificationCodeService;
     @GetMapping("/verification-code")
-    public String verificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
+    public ResponseResult verificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
         String passengerPhone = verificationCodeDTO.getPassengerPhone();
         System.out.println("the passenger's phone number is: " + passengerPhone);
         // 调用服务，生成验证码

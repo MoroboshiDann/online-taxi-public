@@ -34,4 +34,12 @@ public class VerificationCodeService {
         // 返回结果
         return ResponseResult.success();
     }
+
+    public ResponseResult checkCode(String passengerPhone, String verificationCode) {
+        String storedCode = stringRedisTemplate.opsForValue().get(verificationCodePrefix + passengerPhone);
+        if (verificationCode == null || !verificationCode.equals(storedCode)) {
+            return ResponseResult.fail(0, "incorrect code", "");
+        }
+        return ResponseResult.success("");
+    }
 }

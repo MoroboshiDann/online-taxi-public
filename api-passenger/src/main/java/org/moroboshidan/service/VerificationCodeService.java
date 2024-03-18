@@ -2,9 +2,13 @@ package org.moroboshidan.service;
 
 import org.apache.commons.lang.StringUtils;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
+import org.moroboshidan.internalcommon.constant.IdentityConstant;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.dto.TokenResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.internalcommon.response.NumberCodeResponse;
+import org.moroboshidan.internalcommon.response.TokenResponse;
+import org.moroboshidan.internalcommon.util.JwtUtils;
 import org.moroboshidan.remote.ServicePassengerUserClient;
 import org.moroboshidan.remote.ServiceVerificationClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,6 +75,12 @@ public class VerificationCodeService {
         // 判断是否有用户，并进行对应的操作
         VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
         verificationCodeDTO.setPassengerPhone(passengerPhone);
-        return servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
+        servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
+        // 颁发令牌
+        String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        // 响应
+        TokenResponse tokenResponse = new TokenResponse();
+        tokenResponse.setToken(token);
+        return ResponseResult.success(tokenResponse);
     }
 }

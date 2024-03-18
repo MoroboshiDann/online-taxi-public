@@ -4,7 +4,6 @@ import org.apache.commons.lang.StringUtils;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.IdentityConstant;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
-import org.moroboshidan.internalcommon.dto.TokenResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.internalcommon.response.NumberCodeResponse;
 import org.moroboshidan.internalcommon.response.TokenResponse;

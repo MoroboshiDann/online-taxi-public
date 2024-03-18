@@ -2,9 +2,11 @@ package org.moroboshidan.service;
 
 import org.moroboshidan.dto.PassengerUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.mapper.PassengerUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -16,11 +18,11 @@ public class UserService {
     @Autowired
     private PassengerUserMapper passengerUserMapper;
 
-    public ResponseResult loginOfRegistry(String passengerPhone) {
+    public ResponseResult loginOfRegistry(VerificationCodeDTO verificationCodeDTO) {
         System.out.println("user service");
         // 根据手机号查询用户信息
         Map<String, Object> map = new HashMap<>();
-        map.put("passenger_phone", passengerPhone);
+        map.put("passenger_phone", verificationCodeDTO.getPassengerPhone());
         List<PassengerUser> passengerUsers = passengerUserMapper.selectByMap(map);
         // 判断用户信息是否存在
         if (passengerUsers.size() == 0) {
@@ -28,7 +30,7 @@ public class UserService {
             passengerUser.setPassengerName("张三");
             passengerUser.setPassengerGender((byte) 0);
             passengerUser.setState((byte) 0);
-            passengerUser.setPassengerPhone(passengerPhone);
+            passengerUser.setPassengerPhone(verificationCodeDTO.getPassengerPhone());
             passengerUser.setGmtCreate(LocalDateTime.now());
             passengerUser.setGmtModified(LocalDateTime.now());
             passengerUserMapper.insert(passengerUser);

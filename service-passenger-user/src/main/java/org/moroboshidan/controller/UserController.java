@@ -16,6 +16,6 @@ public class UserController {
     public ResponseResult loginOrRegistry(@RequestBody VerificationCodeDTO verificationCodeDTO) {
         String passengerPhone = verificationCodeDTO.getPassengerPhone();
         System.out.println("phone number: " + passengerPhone);
-        return userService.loginOfRegistry(passengerPhone);
+        return userService.loginOfRegistry(verificationCodeDTO);
     }
 }

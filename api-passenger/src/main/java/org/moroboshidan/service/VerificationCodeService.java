@@ -3,7 +3,9 @@ package org.moroboshidan.service;
 import org.apache.commons.lang.StringUtils;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.internalcommon.response.NumberCodeResponse;
+import org.moroboshidan.remote.ServicePassengerUserClient;
 import org.moroboshidan.remote.ServiceVerificationClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class VerificationCodeService {
     @Autowired
     private ServiceVerificationClient serviceVerificationClient;
+    @Autowired
+    private ServicePassengerUserClient servicePassengerUserClient;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
@@ -64,6 +68,9 @@ public class VerificationCodeService {
         if (!storedCode.equals(verificationCode)) {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
-        return ResponseResult.success("");
+        // 判断是否有用户，并进行对应的操作
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
+        verificationCodeDTO.setPassengerPhone(passengerPhone);
+        return servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
     }
 }

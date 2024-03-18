@@ -15,6 +15,7 @@ import java.util.Map;
 public class UserService {
     @Autowired
     private PassengerUserMapper passengerUserMapper;
+
     public ResponseResult loginOfRegistry(String passengerPhone) {
         System.out.println("user service");
         // 根据手机号查询用户信息

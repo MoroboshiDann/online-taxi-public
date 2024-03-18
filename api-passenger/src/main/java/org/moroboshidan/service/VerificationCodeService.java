@@ -1,5 +1,7 @@
 package org.moroboshidan.service;
 
+import org.apache.commons.lang.StringUtils;
+import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.response.NumberCodeResponse;
 import org.moroboshidan.remote.ServiceVerificationClient;
@@ -26,7 +28,7 @@ public class VerificationCodeService {
         System.out.println("remote number code: " +numberCode);
         // 存入redis
         // 需要 key, value
-        String key = verificationCodePrefix + passengerPhone;
+        String key = generateKey(passengerPhone);
         stringRedisTemplate.opsForValue().set(key, numberCode + "", 2, TimeUnit.MINUTES);
         System.out.println("将验证码存入redis");
         // 通过短信服务，将验证码发送至对应的手机上
@@ -35,10 +37,32 @@ public class VerificationCodeService {
         return ResponseResult.success();
     }
 
+    /**
+     * 生成redis key
+     * @param
+     * @return
+     * @throws
+     *
+     */
+    private String generateKey(String passengerPhone) {
+        return verificationCodePrefix + passengerPhone;
+    }
+
+    /**
+     * 用户输入收到的验证码，后端校验
+     * @param
+     * @return
+     * @throws
+     *
+     */
     public ResponseResult checkCode(String passengerPhone, String verificationCode) {
-        String storedCode = stringRedisTemplate.opsForValue().get(verificationCodePrefix + passengerPhone);
-        if (verificationCode == null || !verificationCode.equals(storedCode)) {
-            return ResponseResult.fail(0, "incorrect code", "");
+        String storedCode = stringRedisTemplate.opsForValue().get(generateKey(passengerPhone));
+        System.out.println("verification code in redis: " + storedCode);
+        if (StringUtils.isBlank(storedCode)) {
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
+        }
+        if (!storedCode.equals(verificationCode)) {
+            return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
         return ResponseResult.success("");
     }

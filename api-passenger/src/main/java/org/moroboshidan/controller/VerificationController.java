@@ -1,7 +1,7 @@
 package org.moroboshidan.controller;
 
 import org.moroboshidan.internalcommon.dto.ResponseResult;
-import org.moroboshidan.request.VerificationCodeDTO;
+import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

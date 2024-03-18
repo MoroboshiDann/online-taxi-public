@@ -34,12 +34,6 @@
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.moroboshidan</groupId>
-            <artifactId>internal-common</artifactId>
-            <version>1.0.0</version>
-        </dependency>
     </dependencies>
 
 </project>

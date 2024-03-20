@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.moroboshidan.internalcommon.constant.TokenConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.dto.TokenResult;
 import org.moroboshidan.internalcommon.util.JwtUtils;
@@ -47,9 +48,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             result = false;
         } else {
             // 从redis中取出token
-            String tokenKey = RedisUtils.generateTokenKey(tokenResult.getPhone(), tokenResult.getIdentity());
+            String tokenKey = RedisUtils.generateTokenKey(tokenResult.getPhone(), tokenResult.getIdentity(), TokenConstants.ACCESS_TOKEN_TYPE);
             String storedToken = stringRedisTemplate.opsForValue().get(tokenKey);
-            //
             if (StringUtils.isBlank(storedToken)) {
                 // token过期或者不存在
                 resultString = "token invalid";

@@ -3,6 +3,7 @@ package org.moroboshidan.service;
 import org.apache.commons.lang.StringUtils;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.IdentityConstant;
+import org.moroboshidan.internalcommon.constant.TokenConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.internalcommon.response.NumberCodeResponse;
@@ -64,13 +65,15 @@ public class VerificationCodeService {
         verificationCodeDTO.setPassengerPhone(passengerPhone);
         servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
         // 颁发令牌
-        String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        String accessToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.ACCESS_TOKEN_TYPE);
+        String refreshToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.REFRESH_TOKEN_TYPE);
         // 将token存入redis
-        String tokenKey = RedisUtils.generateTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
-        stringRedisTemplate.opsForValue().set(tokenKey, token, 30, TimeUnit.DAYS);
+        String accessTokenKey = RedisUtils.generateTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.ACCESS_TOKEN_TYPE);
+        String refreshTokenKey = RedisUtils.generateTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.REFRESH_TOKEN_TYPE);
+        stringRedisTemplate.opsForValue().set(accessTokenKey, accessToken, 30, TimeUnit.DAYS);
+        stringRedisTemplate.opsForValue().set(refreshTokenKey, refreshToken, 31, TimeUnit.DAYS); // refresh token过期时间需要久一点
         // 响应
-        TokenResponse tokenResponse = new TokenResponse();
-        tokenResponse.setToken(token);
+        TokenResponse tokenResponse = new TokenResponse(accessToken, refreshToken);
         return ResponseResult.success(tokenResponse);
     }
 }

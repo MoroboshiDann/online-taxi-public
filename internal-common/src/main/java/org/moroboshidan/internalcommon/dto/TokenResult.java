@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class TokenResult {
     private String phone;
     private String identity;
+    private String tokenType;
 }

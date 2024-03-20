@@ -22,6 +22,7 @@ import java.io.PrintWriter;
 public class JwtInterceptor implements HandlerInterceptor {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean result = true;
@@ -29,7 +30,7 @@ public class JwtInterceptor implements HandlerInterceptor {
         String token = request.getHeader("Authorization");
         TokenResult tokenResult = null;
         try {
-            tokenResult = JwtUtils.parseToken(token);
+            tokenResult = JwtUtils.checkToken(token);
         } catch (SignatureVerificationException e) {
             resultString = "token sign error";
             result = false;
@@ -50,11 +51,8 @@ public class JwtInterceptor implements HandlerInterceptor {
             // 从redis中取出token
             String tokenKey = RedisUtils.generateTokenKey(tokenResult.getPhone(), tokenResult.getIdentity(), TokenConstants.ACCESS_TOKEN_TYPE);
             String storedToken = stringRedisTemplate.opsForValue().get(tokenKey);
-            if (StringUtils.isBlank(storedToken)) {
+            if ((StringUtils.isBlank(storedToken)) || (!storedToken.trim().equals(token.trim()))) {
                 // token过期或者不存在
-                resultString = "token invalid";
-                result = false;
-            } else if (!storedToken.trim().equals(token.trim())) {
                 resultString = "token invalid";
                 result = false;
             }

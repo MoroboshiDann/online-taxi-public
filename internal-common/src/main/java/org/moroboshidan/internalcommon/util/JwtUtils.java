@@ -7,8 +7,6 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import org.moroboshidan.internalcommon.constant.TokenConstants;
 import org.moroboshidan.internalcommon.dto.TokenResult;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,5 +48,21 @@ public class JwtUtils {
         TokenResult tokenResult = parseToken(token);
         System.out.println(tokenResult.getPhone());
         System.out.println(tokenResult.getIdentity());
+    }
+    /**
+     * 校验token，判断是否异常
+     * @param
+     * @return
+     * @throws
+     *
+     */
+    public static TokenResult checkToken(String token) {
+        TokenResult tokenResult = null;
+        try {
+            tokenResult = JwtUtils.parseToken(token);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return tokenResult;
     }
 }

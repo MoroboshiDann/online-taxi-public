@@ -21,19 +21,12 @@ public class JwtUtils {
         Map<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, passengerPhone);
         map.put(JWT_KEY_IDENTITY, identity); // 添加identity字段，防止出现司机和乘客手机号重复的情况
-        // 过期时间
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, 1);
-        Date time = calendar.getTime();
 
         JWTCreator.Builder builder = JWT.create();
 
         map.forEach((k, v) -> {
             builder.withClaim(k, v);
         });
-
-        // 整合过期时间
-        builder.withExpiresAt(time);
         // 生成token
         String sign = builder.sign(Algorithm.HMAC256(SIGN));
         return sign;

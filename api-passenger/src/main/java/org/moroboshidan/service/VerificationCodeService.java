@@ -26,6 +26,7 @@ public class VerificationCodeService {
     private StringRedisTemplate stringRedisTemplate;
 
     private String verificationCodePrefix = "passenger-verification";
+    private String tokenPrefix = "token";
 
     public ResponseResult generateCode(String passengerPhone) {
         // 调用验证码服务，获取验证码
@@ -38,7 +39,7 @@ public class VerificationCodeService {
         String key = generateKey(passengerPhone);
         stringRedisTemplate.opsForValue().set(key, numberCode + "", 2, TimeUnit.MINUTES);
         System.out.println("将验证码存入redis");
-        // 通过短信服务，将验证码发送至对应的手机上
+        // todo 通过短信服务，将验证码发送至对应的手机上
 
         // 返回结果
         return ResponseResult.success();
@@ -53,6 +54,10 @@ public class VerificationCodeService {
      */
     private String generateKey(String passengerPhone) {
         return verificationCodePrefix + passengerPhone;
+    }
+
+    private String generateTokenKey(String phone, String identity) {
+        return tokenPrefix + "-" + identity;
     }
 
     /**
@@ -77,6 +82,9 @@ public class VerificationCodeService {
         servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
         // 颁发令牌
         String token = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        // 将token存入redis
+        String tokenKey = generateTokenKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY);
+        stringRedisTemplate.opsForValue().set(tokenKey, token, 30, TimeUnit.DAYS);
         // 响应
         TokenResponse tokenResponse = new TokenResponse();
         tokenResponse.setToken(token);

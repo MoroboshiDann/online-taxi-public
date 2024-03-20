@@ -4,9 +4,9 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.moroboshidan.internalcommon.constant.TokenConstants;
 import org.moroboshidan.internalcommon.dto.TokenResult;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,14 +15,15 @@ public class JwtUtils {
     private static final String SIGN = "CPFmoro!@#";
     private static final String JWT_KEY_PHONE = "passengerPhone";
     private static final String JWT_KEY_IDENTITY = "identity";
-
     private static final String JWT_TOKEN_TYPE = "tokenType";
+    private static final String JWT_TOKEN_TIME = "tokenTime";
     // 生成token
     public static String generateToken(String passengerPhone, String identity, String tokenType) {
         Map<String, String> map = new HashMap<>();
         map.put(JWT_KEY_PHONE, passengerPhone);
         map.put(JWT_KEY_IDENTITY, identity); // 添加identity字段，防止出现司机和乘客手机号重复的情况
         map.put(JWT_TOKEN_TYPE, tokenType);
+        map.put(JWT_TOKEN_TIME, Calendar.getInstance().getTime().toString());
 
         JWTCreator.Builder builder = JWT.create();
 
@@ -42,13 +43,6 @@ public class JwtUtils {
         return new TokenResult(phone, identity, tokenType);
     }
 
-    public static void main(String[] args) {
-        String token = generateToken("15212311231", "passenger", TokenConstants.ACCESS_TOKEN_TYPE);
-        System.out.println(token);
-        TokenResult tokenResult = parseToken(token);
-        System.out.println(tokenResult.getPhone());
-        System.out.println(tokenResult.getIdentity());
-    }
     /**
      * 校验token，判断是否异常
      * @param

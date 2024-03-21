@@ -2,14 +2,21 @@ package org.moroboshidan.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.request.ForecastPriceDTO;
 import org.moroboshidan.internalcommon.response.ForecastPriceResponse;
+import org.moroboshidan.remote.ServiceMapClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
 public class ForecastPriceService {
+    @Autowired
+    private ServiceMapClient serviceMapClient;
     public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
         log.info("调用地图服务，查询距离和时长...");
+        ResponseResult drivingResult = serviceMapClient.driving(new ForecastPriceDTO(depLongitude, depLatitude, destLongitude, destLatitude));
+        log.info(drivingResult.getData().toString());
         log.info("读取计价规则");
         log.info("根据距离、时长、计价规则计算预估价格");
         ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();

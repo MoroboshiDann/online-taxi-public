@@ -62,9 +62,9 @@ public class VerificationCodeService {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
         // 判断是否有用户，并进行对应的操作
-        // VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
-        // verificationCodeDTO.setPassengerPhone(passengerPhone);
-        // servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
+        VerificationCodeDTO verificationCodeDTO = new VerificationCodeDTO();
+        verificationCodeDTO.setPassengerPhone(passengerPhone);
+        servicePassengerUserClient.loginOrRegistry(verificationCodeDTO);
         // 颁发令牌
         String accessToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.ACCESS_TOKEN_TYPE);
         String refreshToken = JwtUtils.generateToken(passengerPhone, IdentityConstant.PASSENGER_IDENTITY, TokenConstants.REFRESH_TOKEN_TYPE);

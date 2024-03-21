@@ -1,5 +1,6 @@
 package org.moroboshidan.service;
 
+import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.dto.PassengerUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
@@ -35,5 +36,23 @@ public class UserService {
             passengerUserMapper.insert(passengerUser);
         }
         return ResponseResult.success();
+    }
+
+    /**
+     * 根据手机号查询用户信息
+     * @param
+     * @return
+     * @throws
+     *
+     */
+    public ResponseResult getUserByPhone(String passengerPhone) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("passenger_phone", passengerPhone);
+        List<PassengerUser> passengerUsers = passengerUserMapper.selectByMap(map);
+        if (passengerUsers.size() == 0) {
+            return ResponseResult.fail(CommonStatusEnum.USER_NOT_EXISTS.getCode(), CommonStatusEnum.USER_NOT_EXISTS.getValue());
+        }
+        PassengerUser passengerUser = passengerUsers.get(0);
+        return ResponseResult.success(passengerUser);
     }
 }

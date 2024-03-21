@@ -20,6 +20,9 @@ public class UserController {
         return userService.loginOfRegistry(verificationCodeDTO);
     }
 
-    // @GetMapping("/user")
+    @GetMapping("/user")
+    public  ResponseResult getUser(@RequestBody VerificationCodeDTO verificationCodeDTO) {
+        return userService.getUserByPhone(verificationCodeDTO.getPassengerPhone());
+    }
 
 }

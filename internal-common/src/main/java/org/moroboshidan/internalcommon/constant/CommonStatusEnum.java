@@ -7,7 +7,8 @@ public enum CommonStatusEnum {
     SUCCESS(1, "success"),
     FAIL(0, "fail"),
     TOKEN_ERR(1199, "token错误"),
-    USER_NOT_EXISTS(1200, "当前用户不存在")
+    USER_NOT_EXISTS(1200, "当前用户不存在"),
+    PRICE_RULE_EMPTY(1300, "计价规则不存在")
     ;
 
     @Getter

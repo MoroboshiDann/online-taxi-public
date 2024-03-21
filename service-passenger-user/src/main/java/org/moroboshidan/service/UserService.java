@@ -1,12 +1,11 @@
 package org.moroboshidan.service;
 
-import org.moroboshidan.dto.PassengerUser;
+import org.moroboshidan.internalcommon.dto.PassengerUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.mapper.PassengerUserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;

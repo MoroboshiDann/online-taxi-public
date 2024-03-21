@@ -1,4 +1,4 @@
-package org.moroboshidan.dto;
+package org.moroboshidan.internalcommon.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -17,4 +17,5 @@ public class PassengerUser {
     private String passengerName;
     private byte passengerGender;
     private byte state;
+    private String profilePhoto;
 }

@@ -46,6 +46,7 @@ public class UserService {
      *
      */
     public ResponseResult getUserByPhone(String passengerPhone) {
+        System.out.println("user service");
         Map<String, Object> map = new HashMap<>();
         map.put("passenger_phone", passengerPhone);
         List<PassengerUser> passengerUsers = passengerUserMapper.selectByMap(map);

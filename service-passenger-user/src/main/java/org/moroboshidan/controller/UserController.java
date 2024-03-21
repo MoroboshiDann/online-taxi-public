@@ -4,10 +4,7 @@ import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class UserController {
@@ -20,9 +17,9 @@ public class UserController {
         return userService.loginOfRegistry(verificationCodeDTO);
     }
 
-    @GetMapping("/user")
-    public  ResponseResult getUser(@RequestBody VerificationCodeDTO verificationCodeDTO) {
-        return userService.getUserByPhone(verificationCodeDTO.getPassengerPhone());
+    @GetMapping("/user/{passengerPhone}")
+    public  ResponseResult getUser(@PathVariable String passengerPhone) {
+        return userService.getUserByPhone(passengerPhone);
     }
 
 }

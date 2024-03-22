@@ -7,7 +7,7 @@ public class BigDecimalUtils {
     public static double add(double v1, double v2) {
         BigDecimal b1 = BigDecimal.valueOf(v1);
         BigDecimal b2 = BigDecimal.valueOf(v2);
-        return b1.add(b2).doubleValue();
+        return b1.add(b2).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
     public static double divide(int v1, int v2) throws IllegalAccessException {

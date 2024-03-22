@@ -5,6 +5,7 @@ public class AmapConfigConstants {
      * 路径规划接口地址
      * */
     public static final String DIRECTION_URL = "https://restapi.amap.com/v3/direction/driving";
+    public static final String DISTRICT_URL = "https://restapi.amap.com/v3/config/district";
     /**
      * 路径规划json key值
      */

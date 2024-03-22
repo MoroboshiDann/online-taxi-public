@@ -7,5 +7,11 @@ spring:
         server-addr: 127.0.0.1:8848
   application:
     name: service-map
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/service-map?charactorEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: 123123
+
 amap:
   key: 54a96049ad6158982e95656bc749c6eb

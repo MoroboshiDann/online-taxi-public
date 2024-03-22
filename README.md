@@ -1,3 +1,16 @@
 # online-taxi-public
 
-马士兵飞滴出行网约车项目
+# 马士兵飞滴出行网约车项目
+
+## 服务端口管理
+| 服务名                      | 端口号  |
+|--------------------------|------|
+| api-passenger            | 8081 |
+| service-verificationcode | 8082 |
+| service-passenger-user   | 8083 |
+| service-price            | 8084 |
+| service-map              | 8085 |
+| service-driver-user      | 8086 |
+
+
+

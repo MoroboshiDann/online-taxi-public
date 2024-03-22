@@ -4,34 +4,37 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DriverUser {
-    private Integer id;
+    private Long id;
     private String address;
     private String driverName;
     private String driverPhone;
-    private LocalDateTime driverBirthday;
+    private Integer driverGender;
+    private LocalDate driverBirthday;
     private String driverNation;
     private String driverContactAddress;
     private String licenseId;
-    private LocalDateTime getDriverLicenseDate;
-    private LocalDateTime driverLicenseOn;
-    private LocalDateTime driverLicenseOff;
+    private LocalDate getDriverLicenseDate;
+    private LocalDate driverLicenseOn;
+    private LocalDate driverLicenseOff;
     private Integer taxiDriver;
     private String certificateNo;
     private String networkCarIssueOrganization;
-    private LocalDateTime networkCarIssueDate;
-    private LocalDateTime getNetworkCarProofDate;
-    private LocalDateTime networkCarProofOn;
-    private LocalDateTime networkCarProofOff;
+    private LocalDate networkCarIssueDate;
+    private LocalDate getNetworkCarProofDate;
+    private LocalDate networkCarProofOn;
+    private LocalDate networkCarProofOff;
+    private LocalDate registerDate;
     private Integer commercialType;
     private String contractCompany;
-    private LocalDateTime contractOn;
-    private LocalDateTime contractOff;
+    private LocalDate contractOn;
+    private LocalDate contractOff;
     private Integer state;
     private LocalDateTime gmtCreate;
     private LocalDateTime gmtUpdate;

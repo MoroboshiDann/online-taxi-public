@@ -11,4 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public interface ServiceDriverUserClient {
     @RequestMapping(method = RequestMethod.POST, value = "/user")
     ResponseResult addDriverUser(@RequestBody DriverUser driverUser);
+
+    @RequestMapping(method = RequestMethod.PUT, value = "/user")
+    ResponseResult updateDriverUser(@RequestBody DriverUser driverUser);
 }

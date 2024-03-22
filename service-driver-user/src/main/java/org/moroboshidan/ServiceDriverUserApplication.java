@@ -12,7 +12,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @SpringBootApplication
 @MapperScan("org.moroboshidan.mapper")
 @EnableDiscoveryClient
-public class ServiceDriverUserApplication
+public class    ServiceDriverUserApplication
 {
     public static void main( String[] args )
     {

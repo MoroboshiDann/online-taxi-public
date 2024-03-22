@@ -7,6 +7,7 @@ import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.ForecastPriceDTO;
 import org.moroboshidan.internalcommon.response.DirectionResponse;
 import org.moroboshidan.internalcommon.response.ForecastPriceResponse;
+import org.moroboshidan.internalcommon.util.BigDecimalUtils;
 import org.moroboshidan.mapper.PriceRuleMapper;
 import org.moroboshidan.remote.ServiceMapClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ public class ForecastPriceService {
     private ServiceMapClient serviceMapClient;
     @Autowired
     private PriceRuleMapper priceRuleMapper;
+
     public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
         log.info("调用地图服务，查询距离和时长...");
         ResponseResult<DirectionResponse> drivingResult = serviceMapClient.driving(new ForecastPriceDTO(depLongitude, depLatitude, destLongitude, destLatitude));
@@ -42,35 +44,31 @@ public class ForecastPriceService {
         double price = getPrice(directionResponse.getDistance(), directionResponse.getDuration(), priceRules.get(0));
         ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
         forecastPriceResponse.setPrice(price);
-        return  ResponseResult.success(forecastPriceResponse);
+        return ResponseResult.success(forecastPriceResponse);
     }
 
     private double getPrice(Integer distance, Integer duration, PriceRule priceRule) {
-        BigDecimal price = new BigDecimal(0);
+        double price = 0.0;
         // 起步价
-        Double startFare = priceRule.getStartFare();
-        BigDecimal startFareDecimal = new BigDecimal(startFare);
-        price = price.add(startFareDecimal);
+        price = BigDecimalUtils.add(price, priceRule.getStartFare());
         // 里程费
         // 总里程m -> km
-        BigDecimal distanceDecimal = new BigDecimal(distance);
-        BigDecimal distanceKiloDecimal = distanceDecimal.divide(new BigDecimal(1000), 2, RoundingMode.HALF_UP);
-        Integer startMile = priceRule.getStartMile(); // 起步里程
-        BigDecimal startMileDecimal = new BigDecimal(startMile);
-        double distanceSubtract = distanceKiloDecimal.subtract(startMileDecimal).doubleValue();
-        // 计算超出起步里程的部分km
-        Double mile = distanceSubtract < 0 ? 0 : distanceSubtract;
-        BigDecimal mileDecimal = new BigDecimal(mile);
-        // 计程单价
-        BigDecimal unitPricePerMile = BigDecimal.valueOf(priceRule.getUnitPricePerMile());
-        BigDecimal mileFare = mileDecimal.multiply(unitPricePerMile).setScale(2, RoundingMode.HALF_UP);
-        price = price.add(mileFare);
-        // 时长费
-        BigDecimal unitPricePerMinute = BigDecimal.valueOf(priceRule.getUnitPricePerMinute());
-        BigDecimal time = new BigDecimal(duration); // 秒数
-        BigDecimal minuteDecimal = time.divide(new BigDecimal(60), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
-        BigDecimal minuteFare = minuteDecimal.multiply(unitPricePerMinute).setScale(2, RoundingMode.HALF_UP);
-        price = price.add(minuteFare);
-        return price.doubleValue();
+        try {
+            double distanceKilo = BigDecimalUtils.divide(distance, 1000);
+            double distanceSubtract = BigDecimalUtils.subtract(distanceKilo, (double) priceRule.getStartMile());
+            // 计算超出起步里程的部分km
+            double mile = distanceSubtract < 0 ? 0 : distanceSubtract;
+            // 计程单价
+            double mileFare = BigDecimalUtils.multiply(mile, priceRule.getUnitPricePerMile());
+            price = BigDecimalUtils.add(price, mileFare);
+            // 时长费
+            BigDecimal unitPricePerMinute = BigDecimal.valueOf(priceRule.getUnitPricePerMinute());
+            double minutes = BigDecimalUtils.divide(duration, 60);
+            double timeFare = BigDecimalUtils.multiply(minutes, priceRule.getUnitPricePerMinute());
+            price = BigDecimalUtils.add(price, timeFare);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+        return price;
     }
 }

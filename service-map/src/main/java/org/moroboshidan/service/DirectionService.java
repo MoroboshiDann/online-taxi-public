@@ -12,10 +12,10 @@ public class DirectionService {
     private MapDirectionClient mapDirectionClient;
     /**
      * 根据起点和重点经纬度，获取距离和时长
+     *
      * @param
      * @return
      * @throws
-     *
      */
     public ResponseResult driving(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
         DirectionResponse direction = mapDirectionClient.direction(depLongitude, depLatitude, destLongitude, destLatitude);

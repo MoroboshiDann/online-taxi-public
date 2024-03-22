@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +27,9 @@ public class ForecastPriceService {
     private PriceRuleMapper priceRuleMapper;
     public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
         log.info("调用地图服务，查询距离和时长...");
-        ResponseResult drivingResult = serviceMapClient.driving(new ForecastPriceDTO(depLongitude, depLatitude, destLongitude, destLatitude));
+        ResponseResult<DirectionResponse> drivingResult = serviceMapClient.driving(new ForecastPriceDTO(depLongitude, depLatitude, destLongitude, destLatitude));
         log.info(drivingResult.getData().toString());
-        DirectionResponse directionResponse = (DirectionResponse) drivingResult.getData();
+        DirectionResponse directionResponse = drivingResult.getData();
         log.info("读取计价规则");
         Map<String, Object> queryMap = new HashMap<>(); // 将两个主键放入map进行查询
         queryMap.put("city_code", "110000");
@@ -44,7 +45,7 @@ public class ForecastPriceService {
         return  ResponseResult.success(forecastPriceResponse);
     }
 
-    private static double getPrice(Integer distance, Integer duration, PriceRule priceRule) {
+    private double getPrice(Integer distance, Integer duration, PriceRule priceRule) {
         BigDecimal price = new BigDecimal(0);
         // 起步价
         Double startFare = priceRule.getStartFare();
@@ -53,7 +54,7 @@ public class ForecastPriceService {
         // 里程费
         // 总里程m -> km
         BigDecimal distanceDecimal = new BigDecimal(distance);
-        BigDecimal distanceKiloDecimal = distanceDecimal.divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal distanceKiloDecimal = distanceDecimal.divide(new BigDecimal(1000), 2, RoundingMode.HALF_UP);
         Integer startMile = priceRule.getStartMile(); // 起步里程
         BigDecimal startMileDecimal = new BigDecimal(startMile);
         double distanceSubtract = distanceKiloDecimal.subtract(startMileDecimal).doubleValue();
@@ -61,22 +62,15 @@ public class ForecastPriceService {
         Double mile = distanceSubtract < 0 ? 0 : distanceSubtract;
         BigDecimal mileDecimal = new BigDecimal(mile);
         // 计程单价
-        BigDecimal unitPricePerMile = new BigDecimal(priceRule.getUnitPricePerMile());
-        BigDecimal mileFare = mileDecimal.multiply(unitPricePerMile).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal unitPricePerMile = BigDecimal.valueOf(priceRule.getUnitPricePerMile());
+        BigDecimal mileFare = mileDecimal.multiply(unitPricePerMile).setScale(2, RoundingMode.HALF_UP);
         price = price.add(mileFare);
         // 时长费
-        BigDecimal unitPricePerMinute = new BigDecimal(priceRule.getUnitPricePerMinute());
+        BigDecimal unitPricePerMinute = BigDecimal.valueOf(priceRule.getUnitPricePerMinute());
         BigDecimal time = new BigDecimal(duration); // 秒数
-        BigDecimal minuteDecimal = time.divide(new BigDecimal(60)).setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal minuteFare = minuteDecimal.multiply(unitPricePerMinute).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal minuteDecimal = time.divide(new BigDecimal(60), RoundingMode.HALF_UP).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal minuteFare = minuteDecimal.multiply(unitPricePerMinute).setScale(2, RoundingMode.HALF_UP);
         price = price.add(minuteFare);
         return price.doubleValue();
-    }
-
-    public static void main(String[] args) {
-        int distance = 10000, duration = 1800;
-        PriceRule priceRule = new PriceRule("110000", "1", 10.00, 3, 2.00, 1.00);
-
-        System.out.println(getPrice(distance, duration,priceRule));
     }
 }

@@ -38,13 +38,13 @@ public class ForecastPriceService {
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
         }
         log.info("根据距离、时长、计价规则计算预估价格");
-        getPrice(directionResponse.getDistance(), directionResponse.getDuration(), priceRules.get(0));
+        double price = getPrice(directionResponse.getDistance(), directionResponse.getDuration(), priceRules.get(0));
         ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse();
-        forecastPriceResponse.setPrice(3.14);
+        forecastPriceResponse.setPrice(price);
         return  ResponseResult.success(forecastPriceResponse);
     }
 
-    private double getPrice(Integer distance, Integer duration, PriceRule priceRule) {
+    private static double getPrice(Integer distance, Integer duration, PriceRule priceRule) {
         BigDecimal price = new BigDecimal(0);
         // 起步价
         Double startFare = priceRule.getStartFare();
@@ -62,7 +62,21 @@ public class ForecastPriceService {
         BigDecimal mileDecimal = new BigDecimal(mile);
         // 计程单价
         BigDecimal unitPricePerMile = new BigDecimal(priceRule.getUnitPricePerMile());
+        BigDecimal mileFare = mileDecimal.multiply(unitPricePerMile).setScale(2, BigDecimal.ROUND_HALF_UP);
+        price = price.add(mileFare);
         // 时长费
-        return 3.14;
+        BigDecimal unitPricePerMinute = new BigDecimal(priceRule.getUnitPricePerMinute());
+        BigDecimal time = new BigDecimal(duration); // 秒数
+        BigDecimal minuteDecimal = time.divide(new BigDecimal(60)).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal minuteFare = minuteDecimal.multiply(unitPricePerMinute).setScale(2, BigDecimal.ROUND_HALF_UP);
+        price = price.add(minuteFare);
+        return price.doubleValue();
+    }
+
+    public static void main(String[] args) {
+        int distance = 10000, duration = 1800;
+        PriceRule priceRule = new PriceRule("110000", "1", 10.00, 3, 2.00, 1.00);
+
+        System.out.println(getPrice(distance, duration,priceRule));
     }
 }

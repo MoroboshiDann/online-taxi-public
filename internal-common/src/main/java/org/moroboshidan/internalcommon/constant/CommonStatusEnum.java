@@ -8,7 +8,8 @@ public enum CommonStatusEnum {
     FAIL(0, "fail"),
     TOKEN_ERR(1199, "token错误"),
     USER_NOT_EXISTS(1200, "当前用户不存在"),
-    PRICE_RULE_EMPTY(1300, "计价规则不存在")
+    PRICE_RULE_EMPTY(1300, "计价规则不存在"),
+    MAP_DISTRICT_ERR(1400, "请求地图错误")
     ;
 
     @Getter

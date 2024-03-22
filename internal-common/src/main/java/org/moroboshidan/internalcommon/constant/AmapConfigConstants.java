@@ -14,4 +14,9 @@ public class AmapConfigConstants {
     public static final String DURATION = "duration";
     public static final  String ROUTE = "route";
     public static final  String PATHS = "paths";
+    public static final String DISTRICTS = "districts";
+    public static final String ADDRESS_CODE = "adcode";
+    public static final String ADDRESS_NAME = "name";
+    public static final String LEVEL = "level";
+    public static final String STREET = "street";
 }

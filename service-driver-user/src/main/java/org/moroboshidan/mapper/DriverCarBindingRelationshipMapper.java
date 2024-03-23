@@ -1,7 +1,7 @@
 package org.moroboshidan.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.moroboshidan.internalcommon.dto.Car;
+import org.moroboshidan.internalcommon.dto.DriverCarBindingRelationship;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
@@ -13,6 +13,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2024-03-23
  */
 @Mapper
-public interface CarMapper extends BaseMapper<Car> {
+public interface DriverCarBindingRelationshipMapper extends BaseMapper<DriverCarBindingRelationship> {
 
 }

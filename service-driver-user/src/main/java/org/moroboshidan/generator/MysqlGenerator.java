@@ -23,7 +23,7 @@ public class MysqlGenerator {
                     builder.parent("org.moroboshidan").pathInfo(Collections.singletonMap(OutputFile.mapperXml, "D:\\MyRepository\\gitRepository\\online-taxi-public\\service-driver-user\\src\\main\\java\\org\\moroboshidan\\mapper"));
                 })
                 .strategyConfig(builder -> {
-                    builder.addInclude("car");
+                    builder.addInclude("driver_car_binding_relationship");
                 })
                 .templateEngine(new FreemarkerTemplateEngine())
                 .execute();

@@ -5,6 +5,7 @@ import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.service.VerificationCodeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,5 +16,10 @@ public class VerificationCodeController {
     @GetMapping("/verification-code")
     public ResponseResult getVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
         return verificationCodeService.checkAndSendVerificationCode(verificationCodeDTO);
+    }
+
+    @PostMapping("/verification-code-check")
+    public ResponseResult checkVerificationCode(@RequestBody VerificationCodeDTO verificationCodeDTO) {
+        return verificationCodeService.checkVerificationCode(verificationCodeDTO.getDriverPhone(), verificationCodeDTO.getVerificationCode());
     }
 }

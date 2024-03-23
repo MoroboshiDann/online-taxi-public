@@ -51,7 +51,7 @@ public class VerificationCodeService {
      * @throws
      *
      */
-    public ResponseResult checkCode(String passengerPhone, String verificationCode) {
+    public ResponseResult checkVerificationCode(String passengerPhone, String verificationCode) {
         String codeInRedis = stringRedisTemplate.opsForValue().get(RedisUtils.generateKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY));
         log.info("redis key is: " + RedisUtils.generateKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY));
         log.info("verification code in redis: " + codeInRedis);

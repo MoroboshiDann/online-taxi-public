@@ -18,9 +18,9 @@ public class JwtUtils {
     private static final String JWT_TOKEN_TYPE = "tokenType";
     private static final String JWT_TOKEN_TIME = "tokenTime";
     // 生成token
-    public static String generateToken(String passengerPhone, String identity, String tokenType) {
+    public static String generateToken(String phone, String identity, String tokenType) {
         Map<String, String> map = new HashMap<>();
-        map.put(JWT_KEY_PHONE, passengerPhone);
+        map.put(JWT_KEY_PHONE, phone);
         map.put(JWT_KEY_IDENTITY, identity); // 添加identity字段，防止出现司机和乘客手机号重复的情况
         map.put(JWT_TOKEN_TYPE, tokenType);
         map.put(JWT_TOKEN_TIME, Calendar.getInstance().getTime().toString());

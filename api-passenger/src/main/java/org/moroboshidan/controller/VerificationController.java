@@ -25,6 +25,6 @@ public class VerificationController {
     public ResponseResult verificationCodeCheck(@RequestBody VerificationCodeDTO verificationCodeDTO) {
         String passengerPhone = verificationCodeDTO.getPassengerPhone();
         String verificationCode = verificationCodeDTO.getVerificationCode();
-        return verificationCodeService.checkCode(passengerPhone, verificationCode);
+        return verificationCodeService.checkVerificationCode(passengerPhone, verificationCode);
     }
 }

@@ -11,4 +11,8 @@ public class DriverCarConstants {
     public static final int DRIVER_STATE_INVALID = 1;
     public static final int DRIVER_EXISTS = 1;
     public static final int DRIVER_NOT_EXISTS = 0;
+    public static final int DRIVER_WORK_STATUS_ONGOING = 1;
+    public static final int DRIVER_WORK_STATUS_OFF_WORK = 0;
+    public static final int DRIVER_WORK_STATUS_SUSPEND = 2;
+
 }

@@ -37,20 +37,18 @@ public class DriverUserService {
         return ResponseResult.success();
     }
 
-    public ResponseResult getDriverUserByPhone(String driverPhone) {
+    public ResponseResult<DriverUserExistsResponse> getDriverUserByPhone(String driverPhone) {
         Map<String, Object> map = new HashMap<>();
         map.put("driver_phone", driverPhone);
         map.put("state", DriverCarConstants.DRIVER_STATE_VALID);
         List<DriverUser> driverUsers = driverUserMapper.selectByMap(map);
-        int ifExists = 1;
         DriverUserExistsResponse driverUserExistsResponse = new DriverUserExistsResponse();;
         if (driverUsers.isEmpty()) {
-            ifExists = 0;
             driverUserExistsResponse.setDriverPhone(null);
-            driverUserExistsResponse.setIfExists(ifExists);
+            driverUserExistsResponse.setIfExists(DriverCarConstants.DRIVER_NOT_EXISTS);
         } else {
             driverUserExistsResponse.setDriverPhone(driverUsers.get(0).getDriverPhone());
-            driverUserExistsResponse.setIfExists(ifExists);
+            driverUserExistsResponse.setIfExists(DriverCarConstants.DRIVER_EXISTS);
         }
         return ResponseResult.success(driverUserExistsResponse);
     }

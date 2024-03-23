@@ -5,10 +5,7 @@ import org.moroboshidan.internalcommon.dto.DriverCarBindingRelationship;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.service.DriverCarBindingRelationshipService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -24,12 +21,12 @@ public class DriverCarBindingRelationshipController {
     @Autowired
     private DriverCarBindingRelationshipService driverCarBindingRelationshipService;
 
-    @GetMapping("/bind")
+    @PostMapping("/bind")
     public ResponseResult bind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship) {
         return driverCarBindingRelationshipService.bind(driverCarBindingRelationship);
     }
 
-    @GetMapping("/unbind")
+    @PostMapping("/unbind")
     public ResponseResult unbind(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship) {
         return driverCarBindingRelationshipService.unbind(driverCarBindingRelationship);
     }

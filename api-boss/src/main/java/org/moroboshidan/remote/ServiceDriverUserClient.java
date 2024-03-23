@@ -1,5 +1,6 @@
 package org.moroboshidan.remote;
 
+import org.moroboshidan.internalcommon.dto.Car;
 import org.moroboshidan.internalcommon.dto.DriverUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -14,4 +15,7 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.PUT, value = "/user")
     ResponseResult updateDriverUser(@RequestBody DriverUser driverUser);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/car")
+    ResponseResult addCar(@RequestBody Car car);
 }

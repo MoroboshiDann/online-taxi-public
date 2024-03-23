@@ -1,6 +1,7 @@
 package org.moroboshidan.remote;
 
 import org.moroboshidan.internalcommon.dto.Car;
+import org.moroboshidan.internalcommon.dto.DriverCarBindingRelationship;
 import org.moroboshidan.internalcommon.dto.DriverUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -18,4 +19,11 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/car")
     ResponseResult addCar(@RequestBody Car car);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/driver-car-binding-relationship/bind")
+    ResponseResult bindDriverCarRelationship(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/driver-car-binding-relationship/unbind")
+    ResponseResult unbindDriverCarRelationship(@RequestBody DriverCarBindingRelationship driverCarBindingRelationship);
+
 }

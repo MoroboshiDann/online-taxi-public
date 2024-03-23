@@ -155,7 +155,7 @@ public class Car implements Serializable {
     /**
      * 0有效，1无效
      */
-    private Boolean state;
+    private Integer state;
 
     private LocalDateTime gmtCreate;
 

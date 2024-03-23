@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class NumberCodeController {
 
     @GetMapping("/numberCode/{size}")
-    public ResponseResult numberCode(@PathVariable int size) {
+    public ResponseResult<NumberCodeResponse> numberCode(@PathVariable int size) {
         System.out.println("size: " + size);
         int numberCode = (int) ((Math.random() * 9 + 1) * (Math.pow(10, size - 1)));
         NumberCodeResponse numberCodeResponse = new NumberCodeResponse(numberCode);

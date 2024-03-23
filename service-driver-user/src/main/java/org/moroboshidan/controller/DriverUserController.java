@@ -40,4 +40,9 @@ public class DriverUserController {
         return driverUserService.updateDriverUser(driverUser);
     }
 
+    @GetMapping("/user")
+    public ResponseResult getDriverUser(@RequestBody DriverUser driverUser) {
+        return driverUserService.getDriverUserByPhone(driverUser.getDriverPhone());
+    }
+
 }

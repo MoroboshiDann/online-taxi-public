@@ -11,7 +11,7 @@
  Target Server Version : 80035
  File Encoding         : 65001
 
- Date: 23/03/2024 14:18:50
+ Date: 23/03/2024 16:44:33
 */
 
 SET NAMES utf8mb4;
@@ -40,9 +40,9 @@ CREATE TABLE `car`  (
   `trans_agency` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '运输证发证机构',
   `trans_area` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '运输证发证地',
   `trans_date_start` date NULL DEFAULT NULL,
-  `trans_date_end` date NULL DEFAULT NULL,
+  `trans_date_end` date NOT NULL,
   `certify_date_b` date NULL DEFAULT NULL COMMENT '车辆初次登记日期',
-  `fix_state` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '车辆检修状态，0未检修，1已检修，2未知',
+  `fix_state` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '车辆检修状态，0未检修，1已检修，2未知',
   `next_fix_date` date NULL DEFAULT NULL COMMENT '下次检修日期',
   `check_state` char(2) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '年审状态：0未年审，1年审合格，2年审不合格',
   `fee_print_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '发票打印设备号',
@@ -55,12 +55,33 @@ CREATE TABLE `car`  (
   `state` tinyint(1) NULL DEFAULT NULL COMMENT '0有效，1无效',
   `gmt_create` datetime NULL DEFAULT NULL,
   `gmt_update` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`, `fix_state`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of car
 -- ----------------------------
+INSERT INTO `car` VALUES (1771448262407843841, '110000', '京N12345', '1', 2, '大众', '辉腾', '小型轿车', NULL, '1', 'asdfaf', NULL, '2022-01-05', '1', '3.0T', '北京海淀车管所', '北京海淀', '2022-01-06', '2022-01-09', '2022-01-06', '1', '2022-08-01', '0', 'asdfasdf', '卫星品牌', '卫星型号', '2022-01-01', '2022-02-02', 1, '稍后关联', 1, '2024-03-23 16:05:52', '2024-03-23 16:05:52');
+
+-- ----------------------------
+-- Table structure for driver_car_binding_relationship
+-- ----------------------------
+DROP TABLE IF EXISTS `driver_car_binding_relationship`;
+CREATE TABLE `driver_car_binding_relationship`  (
+  `id` bigint NOT NULL,
+  `driver_id` bigint NULL DEFAULT NULL,
+  `car_id` bigint NULL DEFAULT NULL,
+  `bind_state` int NULL DEFAULT NULL,
+  `binding_time` datetime NULL DEFAULT NULL,
+  `un_binding_time` datetime NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of driver_car_binding_relationship
+-- ----------------------------
+INSERT INTO `driver_car_binding_relationship` VALUES (1771439081428709377, 1, 2, 2, '2024-03-23 15:29:23', '2024-03-23 15:58:38');
+INSERT INTO `driver_car_binding_relationship` VALUES (1771450831205060609, 12, 23, 2, '2024-03-23 16:16:05', '2024-03-23 16:16:20');
 
 -- ----------------------------
 -- Table structure for driver_user
@@ -95,7 +116,7 @@ CREATE TABLE `driver_user`  (
   `gmt_create` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   `gmt_update` datetime NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of driver_user

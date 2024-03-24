@@ -1,5 +1,6 @@
 package org.moroboshidan.remote;
 
+import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.moroboshidan.internalcommon.constant.AmapConfigConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
@@ -15,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import java.net.URI;
 
 @Service
+@Slf4j
 public class TrackClient {
     @Value("${amap.key}")
     private String amapKey;
@@ -50,15 +52,15 @@ public class TrackClient {
                 .append("&trid=").append(pointRequest.getTrid())
                 .append("&points=%5B"); // [
         for (PointDTO point : pointRequest.getPoints()) {
-            url.append("%7B%22locate%22%3A%22").append(point.getLocate());
-            url.append("%22%2C%22locatetime%22%3A").append(point.getLocateTime());
+            url.append("%7B%22location%22%3A%22").append(point.getLocation());
+            url.append("%22%2C%22locatetime%22%3A").append(point.getLocatetime());
             url.append("%7D");
         }
         url.append("%5D"); // ]
+        log.info(url.toString());
         JSONObject result = JSONObject.fromObject(restTemplate.postForEntity(URI.create(url.toString()), null, String.class).getBody());
         JSONObject data = result.getJSONObject("data");
-
-
+        log.info(data.toString());
         return ResponseResult.success();
     }
 }

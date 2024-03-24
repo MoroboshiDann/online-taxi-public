@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PointDTO {
-    private String locate;
-    private String locateTime;
+    private String location;
+    private String locatetime;
 }

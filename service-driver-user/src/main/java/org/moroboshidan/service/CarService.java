@@ -1,5 +1,7 @@
 package org.moroboshidan.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.dto.Car;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class CarService {
@@ -33,5 +36,15 @@ public class CarService {
         car.setTrid(trname);
         carMapper.insert(car);
         return ResponseResult.success();
+    }
+
+    public ResponseResult getById(Long carId) {
+        LambdaQueryWrapper<Car> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Car::getId, carId);
+        List<Car> cars = carMapper.selectList(queryWrapper);
+        if (cars.isEmpty()) {
+            return ResponseResult.fail(CommonStatusEnum.CAR_NOT_EXISTS.getCode(), CommonStatusEnum.CAR_NOT_EXISTS.getValue());
+        }
+        return ResponseResult.success(cars.get(0));
     }
 }

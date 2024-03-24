@@ -15,7 +15,7 @@ public enum CommonStatusEnum {
     DRIVER_NOT_EXISTS(1502, "司机不存在"),
     CAR_NOT_EXISTS(1503, "车辆不存在"),
     DRIVER_ALREADY_BIND(1504, "司机已经被绑定"),
-    CAR_ALREADY_BIND(1505, "车辆已经被绑定")
+    CAR_ALREADY_BIND(1505, "车辆已经被绑定"),
     ;
 
     @Getter

@@ -40,6 +40,15 @@ public class Car implements Serializable {
     private String tid;
 
     /**
+     * terminal对应的轨迹id
+     */
+    private String trid;
+    /**
+     * terminal对应的轨迹名称
+     */
+    private  String trname;
+
+    /**
      * 车牌颜色，1蓝色，2黄色，3黑色，4白色，5绿色，9其他
      */
     private String plateColor;

@@ -8,6 +8,7 @@ public class AmapConfigConstants {
     public static final String DISTRICT_URL = "https://restapi.amap.com/v3/config/district";
     public static final String SERVICE_ADD_URL = "https://tsapi.amap.com/v1/track/service/add";
     public static final String TERMINAL_ADD_URL = "https://tsapi.amap.com/v1/track/terminal/add";
+    public static final String TRACK_ADD_URL = "https://tsapi.amap.com/v1/track/trace/add";
     /**
      * 路径规划json key值
      */

@@ -13,8 +13,14 @@ public class TerminalController {
     @Autowired
     private TerminalService terminalService;
 
+    /**
+     * 创建车辆对应的终端
+     * @param name 对应车牌号
+     * @param desc 对应车辆在数据库中的car id
+     * @return
+     */
     @PostMapping("/add")
-    public ResponseResult add(String name) {
-        return terminalService.addTerminal(name);
+    public ResponseResult add(String name, String desc) {
+        return terminalService.addTerminal(name, desc);
     }
 }

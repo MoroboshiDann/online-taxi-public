@@ -16,9 +16,3 @@ spring:
 amap:
   key: 54a96049ad6158982e95656bc749c6eb
   sid: 1023169
-  service-id: 1023169
-  terminal-id-1: 864519950
-  terminal-id-2: 864657598
-  1-tr-id-1: 40
-  service-id-test-1: 1023126
-  service-id-test-2: 1023111

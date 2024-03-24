@@ -24,8 +24,9 @@ public class CarService {
     public ResponseResult addCar(Car car) {
         car.setGmtCreate(LocalDateTime.now());
         car.setGmtUpdate(LocalDateTime.now());
+        carMapper.insert(car);
         // 为此车辆在猎鹰服务中创建对应的terminal，并返回其tid
-        TerminalResponse terminalResponse = serviceMapClient.addTerminal(car.getVehicleNo()).getData();
+        TerminalResponse terminalResponse = serviceMapClient.addTerminal(car.getVehicleNo(), car.getId().toString() ).getData();
         String tid = terminalResponse.getTid();
         car.setTid(tid);
         // 为此车辆的terminal创建一条轨迹，并返回其trid
@@ -33,8 +34,8 @@ public class CarService {
         String trid = trackResponse.getTrid();
         String trname = trackResponse.getTrname();
         car.setTrid(trid);
-        car.setTrid(trname);
-        carMapper.insert(car);
+        car.setTrname(trname);
+        carMapper.updateById(car);
         return ResponseResult.success();
     }
 

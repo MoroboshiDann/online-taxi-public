@@ -60,7 +60,6 @@ public class TrackClient {
         log.info(url.toString());
         JSONObject result = JSONObject.fromObject(restTemplate.postForEntity(URI.create(url.toString()), null, String.class).getBody());
         JSONObject data = result.getJSONObject("data");
-        log.info(data.toString());
         return ResponseResult.success();
     }
 }

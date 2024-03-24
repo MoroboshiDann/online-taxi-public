@@ -11,7 +11,7 @@
  Target Server Version : 80035
  File Encoding         : 65001
 
- Date: 23/03/2024 21:06:20
+ Date: 24/03/2024 20:06:50
 */
 
 SET NAMES utf8mb4;
@@ -22,6 +22,9 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `car`;
 CREATE TABLE `car`  (
+  `trname` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `trid` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
+  `tid` varchar(16) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL,
   `id` bigint NOT NULL AUTO_INCREMENT,
   `address` char(6) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '车辆所在城市',
   `vehicle_no` varchar(8) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '车牌号',
@@ -55,13 +58,14 @@ CREATE TABLE `car`  (
   `state` tinyint(1) NULL DEFAULT NULL COMMENT '0有效，1无效',
   `gmt_create` datetime NULL DEFAULT NULL,
   `gmt_update` datetime NULL DEFAULT NULL,
-  PRIMARY KEY (`id`, `fix_state`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1771448262407843842 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of car
 -- ----------------------------
-INSERT INTO `car` VALUES (1771448262407843841, '110000', '京N12345', '1', 2, '大众', '辉腾', '小型轿车', NULL, '1', 'asdfaf', NULL, '2022-01-05', '1', '3.0T', '北京海淀车管所', '北京海淀', '2022-01-06', '2022-01-09', '2022-01-06', '1', '2022-08-01', '0', 'asdfasdf', '卫星品牌', '卫星型号', '2022-01-01', '2022-02-02', 1, '稍后关联', 1, '2024-03-23 16:05:52', '2024-03-23 16:05:52');
+INSERT INTO `car` VALUES ('', '180', '864911259', 1771852239662346241, '110000', '京A1000', '1', 2, '奔驰', 'glc', '豪华轿车', NULL, '1', 'asdfaf', NULL, '2022-01-05', '1', '3.0T', '北京海淀车管所', '北京海淀', '2022-01-06', '2022-01-09', '2022-01-06', '1', '2022-08-01', '0', 'asdfasdf', '卫星品牌', '卫星型号', '2022-01-01', '2022-02-02', 1, '稍后关联', 1, '2024-03-24 18:51:08', '2024-03-24 18:51:08');
+INSERT INTO `car` VALUES ('', '200', '864921501', 1771853769371152385, '110000', '京A0000', '1', 2, '劳斯莱斯', '库里南', '豪华轿车', NULL, '1', 'asdfaf', NULL, '2022-01-05', '1', '3.0T', '北京海淀车管所', '北京海淀', '2022-01-06', '2022-01-09', '2022-01-06', '1', '2022-08-01', '0', 'asdfasdf', '卫星品牌', '卫星型号', '2022-01-01', '2022-02-02', 1, '稍后关联', 1, '2024-03-24 18:57:13', '2024-03-24 18:57:13');
 
 -- ----------------------------
 -- Table structure for driver_car_binding_relationship
@@ -134,7 +138,7 @@ CREATE TABLE `driver_user_work_status`  (
   `gmt_create` datetime NULL DEFAULT NULL,
   `gmt_modified` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of driver_user_work_status

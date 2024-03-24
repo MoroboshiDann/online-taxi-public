@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.moroboshidan.internalcommon.constant.AmapConfigConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.response.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -32,10 +33,10 @@ public class ServiceClient {
         urlBuild.append("&name=").append(name);
         log.info(urlBuild.toString());
         // 调用高德接口
-        ResponseEntity<String> forEntity = restTemplate.getForEntity(urlBuild.toString(), String.class);
+        ResponseEntity<String> forEntity = restTemplate.postForEntity(urlBuild.toString(), null, String.class);
         // 解析接口
         JSONObject result = JSONObject.fromObject(forEntity.getBody());
-        String sid = (String) result.getJSONObject("data").get("sid");
-        return ResponseResult.success(sid);
+        String sid = result.getJSONObject("data").getString("sid");
+        return ResponseResult.success(new ServiceResponse(sid));
     }
 }

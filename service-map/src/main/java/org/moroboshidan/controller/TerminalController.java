@@ -23,4 +23,15 @@ public class TerminalController {
     public ResponseResult add(String name, String desc) {
         return terminalService.addTerminal(name, desc);
     }
+
+    /**
+     * 地图周边搜索，给出搜素中心的经纬度和半径
+     * @param center
+     * @param radius
+     * @return
+     */
+    @PostMapping("/aroundsearch")
+    public ResponseResult aroundSearch(String center, Integer radius) {
+        return terminalService.aroundSearch(center, radius);
+    }
 }

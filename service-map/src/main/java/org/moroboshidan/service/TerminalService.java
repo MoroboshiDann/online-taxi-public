@@ -19,4 +19,14 @@ public class TerminalService {
     public ResponseResult addTerminal(String name, String desc) {
         return terminalClient.addTerminal(name, desc);
     }
+
+    /**
+     * 地图周边搜索，给出搜素中心的经纬度和半径
+     * @param center
+     * @param radius
+     * @return
+     */
+    public ResponseResult aroundSearch(String center, Integer radius) {
+        return terminalClient.aroundSearch(center, radius);
+    }
 }

@@ -34,6 +34,10 @@ public class Car implements Serializable {
      * 车牌号
      */
     private String vehicleNo;
+    /**
+     * 终端id terminal id
+     */
+    private String tid;
 
     /**
      * 车牌颜色，1蓝色，2黄色，3黑色，4白色，5绿色，9其他

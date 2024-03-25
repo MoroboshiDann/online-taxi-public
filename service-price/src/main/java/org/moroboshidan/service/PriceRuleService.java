@@ -104,4 +104,23 @@ public class PriceRuleService {
             return ResponseResult.success(true);
         }
     }
+
+    /**
+     * @description: 根据城市编码和车辆类型检查当前城市是否有计价规则
+     * @param priceRule
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 20:43
+     */
+    public ResponseResult<Boolean> ifExists(PriceRule priceRule) {
+        LambdaQueryWrapper<PriceRule> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PriceRule::getCityCode, priceRule.getCityCode());
+        queryWrapper.eq(PriceRule::getVehicleType, priceRule.getVehicleType());
+        queryWrapper.orderByDesc(PriceRule::getFareVersion);
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        if (priceRules.isEmpty()) {
+            return ResponseResult.success(false);
+        }
+        return ResponseResult.success(true);
+    }
 }

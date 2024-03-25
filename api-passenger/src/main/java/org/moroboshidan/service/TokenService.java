@@ -30,8 +30,8 @@ public class TokenService {
         // 读取redis中的refresh token，进行对比
         // 生成key
         String refreshTokenKey = RedisUtils.generateTokenKey(passengerPhone, identity, TokenConstants.REFRESH_TOKEN_TYPE);
-        String refreshTokenRedis = stringRedisTemplate.opsForValue().get(refreshTokenKey);
-        if ((StringUtils.isBlank(refreshTokenRedis)) || (!refreshTokenRedis.equals(refreshTokenSrc))) {
+        String refreshTokenInRedis = stringRedisTemplate.opsForValue().get(refreshTokenKey);
+        if ((StringUtils.isBlank(refreshTokenInRedis)) || (!refreshTokenInRedis.equals(refreshTokenSrc))) {
             // token过期或者不存在
             return ResponseResult.fail(CommonStatusEnum.TOKEN_ERR.getCode(), CommonStatusEnum.TOKEN_ERR.getValue());
         }

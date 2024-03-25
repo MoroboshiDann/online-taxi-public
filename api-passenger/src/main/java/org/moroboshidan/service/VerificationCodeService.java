@@ -52,13 +52,13 @@ public class VerificationCodeService {
      *
      */
     public ResponseResult checkVerificationCode(String passengerPhone, String verificationCode) {
-        String codeInRedis = stringRedisTemplate.opsForValue().get(RedisUtils.generateKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY));
+        String verificationCodeInRedis = stringRedisTemplate.opsForValue().get(RedisUtils.generateKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY));
         log.info("redis key is: " + RedisUtils.generateKey(passengerPhone, IdentityConstant.PASSENGER_IDENTITY));
-        log.info("verification code in redis: " + codeInRedis);
-        if (StringUtils.isBlank(codeInRedis)) {
+        log.info("verification code in redis: " + verificationCodeInRedis);
+        if (StringUtils.isBlank(verificationCodeInRedis)) {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
-        if (!codeInRedis.equals(verificationCode)) {
+        if (!verificationCodeInRedis.equals(verificationCode)) {
             return ResponseResult.fail(CommonStatusEnum.VERIFICATION_CODE_ERROR.getCode(), CommonStatusEnum.VERIFICATION_CODE_ERROR.getValue());
         }
         // 判断是否有用户，并进行对应的操作

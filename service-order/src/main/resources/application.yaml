@@ -12,6 +12,11 @@ spring:
     password: 123123
   application:
     name: service-order
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 1
 mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

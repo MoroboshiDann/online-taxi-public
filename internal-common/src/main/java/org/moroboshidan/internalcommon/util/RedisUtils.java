@@ -3,6 +3,7 @@ package org.moroboshidan.internalcommon.util;
 public class RedisUtils {
     public static String verificationCodePrefix = "verification-code-";
     public static String tokenPrefix = "token-";
+    public static String blacklistedDevicePrefix = "blacklisted-device-";
     /**
      * 根据手机号生成验证码在redis中的key
      * @param

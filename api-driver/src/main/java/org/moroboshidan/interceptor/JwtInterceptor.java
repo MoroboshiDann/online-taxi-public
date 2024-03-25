@@ -5,6 +5,7 @@ import com.auth0.jwt.exceptions.SignatureVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.moroboshidan.internalcommon.constant.HeaderParamConstants;
 import org.moroboshidan.internalcommon.constant.TokenConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.dto.TokenResult;
@@ -25,7 +26,7 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         boolean result = true;
         String resultString = "";
-        String token = request.getHeader("Authorization");
+        String token = request.getHeader(HeaderParamConstants.AUTHORIZATION);
         TokenResult tokenResult = null;
         try {
             tokenResult = JwtUtils.checkToken(token);

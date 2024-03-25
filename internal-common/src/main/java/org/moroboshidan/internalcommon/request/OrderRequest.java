@@ -28,4 +28,5 @@ public class OrderRequest {
     private Integer encrypt;
     private String fareType;
     private Integer fareVersion;
+    private String deviceCode;
 }

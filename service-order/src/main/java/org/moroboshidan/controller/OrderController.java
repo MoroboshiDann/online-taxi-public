@@ -1,5 +1,6 @@
 package org.moroboshidan.controller;
 
+import org.moroboshidan.internalcommon.constant.HeaderParamConstants;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
 import org.moroboshidan.service.OrderService;
@@ -8,6 +9,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/order")
@@ -22,7 +25,8 @@ public class OrderController {
      * @time: 2024/3/25 10:25
      */
     @PostMapping("/add")
-    public ResponseResult add(@RequestBody OrderRequest orderRequest) {
+    public ResponseResult add(@RequestBody OrderRequest orderRequest, HttpServletRequest httpServletRequest) {
+        orderRequest.setDeviceCode(httpServletRequest.getHeader(HeaderParamConstants.DEVICE_CODE));
         return orderService.add(orderRequest);
     }
 }

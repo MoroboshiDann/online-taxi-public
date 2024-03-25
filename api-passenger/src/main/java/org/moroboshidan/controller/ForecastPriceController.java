@@ -20,6 +20,6 @@ public class ForecastPriceController {
         log.info("出发地纬度：" + forecastPriceDTO.getDepLatitude());
         log.info("目的地经度：" + forecastPriceDTO.getDestLongitude());
         log.info("目的地纬度：" + forecastPriceDTO.getDestLatitude());
-        return forecastPriceService.forecastPrice(forecastPriceDTO.getDepLongitude(), forecastPriceDTO.getDepLatitude(), forecastPriceDTO.getDestLongitude(), forecastPriceDTO.getDestLatitude());
+        return forecastPriceService.forecastPrice(forecastPriceDTO);
     }
 }

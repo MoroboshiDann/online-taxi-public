@@ -8,5 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ForecastPriceResponse {
+    private String cityCode;
+    private String vehicleType;
     private double price;
 }

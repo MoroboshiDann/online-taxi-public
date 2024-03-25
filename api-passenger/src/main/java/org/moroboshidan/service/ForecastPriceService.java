@@ -19,8 +19,7 @@ public class ForecastPriceService {
      * @return
      * @throws
      */
-    public ResponseResult forecastPrice(String depLongitude, String depLatitude, String destLongitude, String destLatitude) {
-        ResponseResult responseResult = servicePriceClient.forecastPrice(new ForecastPriceDTO(depLongitude, depLatitude, destLongitude, destLatitude));
-        return ResponseResult.success(responseResult.getData());
+    public ResponseResult<ForecastPriceResponse> forecastPrice(ForecastPriceDTO forecastPriceDTO) {
+        return servicePriceClient.forecastPrice(forecastPriceDTO);
     }
 }

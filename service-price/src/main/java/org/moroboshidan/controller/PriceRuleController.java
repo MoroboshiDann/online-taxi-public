@@ -19,4 +19,8 @@ public class PriceRuleController {
         return priceRuleService.add(priceRule);
     }
 
+    @PostMapping("/update")
+    public ResponseResult update(@RequestBody PriceRule priceRule) {
+        return priceRuleService.update(priceRule);
+    }
 }

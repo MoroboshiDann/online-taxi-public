@@ -9,6 +9,8 @@ public enum CommonStatusEnum {
     TOKEN_ERR(1199, "token错误"),
     USER_NOT_EXISTS(1200, "当前用户不存在"),
     PRICE_RULE_EMPTY(1300, "计价规则不存在"),
+    PRICE_RULE_ALREADY_EXISTS(1301, "计价规则已存在"),
+    PRICE_RULE_DID_NOT_CHANGE(1302, "计价规则没有变化"),
     MAP_DISTRICT_ERR(1400, "请求地图错误"),
     DRIVER_CAR_BIND_NOT_EXISTS(1500, "司机车辆绑定关系不存在"),
     DRIVER_CAR_BIND_EXISTS(1501, "司机车辆绑定关系已存在"),

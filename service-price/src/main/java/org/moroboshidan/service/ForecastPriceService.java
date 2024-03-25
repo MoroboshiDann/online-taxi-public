@@ -30,7 +30,12 @@ public class ForecastPriceService {
 
     public ResponseResult<ForecastPriceResponse> forecastPrice(ForecastPriceDTO forecastPriceDTO) {
         log.info("调用地图服务，查询距离和时长...");
-        ResponseResult<DirectionResponse> drivingResult = serviceMapClient.driving(new ForecastPriceDTO(forecastPriceDTO.getDepLongitude(), forecastPriceDTO.getDepLatitude(), forecastPriceDTO.getDestLongitude(), forecastPriceDTO.getDestLatitude(), null, null));
+        ResponseResult<DirectionResponse> drivingResult = serviceMapClient.driving(
+                new ForecastPriceDTO(forecastPriceDTO.getDepLongitude(),
+                        forecastPriceDTO.getDepLatitude(),
+                        forecastPriceDTO.getDestLongitude(),
+                        forecastPriceDTO.getDestLatitude(),
+                        null, null));
         log.info(drivingResult.getData().toString());
         DirectionResponse directionResponse = drivingResult.getData();
         log.info("读取计价规则");
@@ -43,8 +48,9 @@ public class ForecastPriceService {
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
         }
         log.info("根据距离、时长、计价规则计算预估价格");
-        double price = getPrice(directionResponse.getDistance(), directionResponse.getDuration(), priceRules.get(0));
-        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse(forecastPriceDTO.getCityCode(), forecastPriceDTO.getVehicleType(), price);
+        PriceRule priceRule = priceRules.get(0);
+        double price = getPrice(directionResponse.getDistance(), directionResponse.getDuration(), priceRule);
+        ForecastPriceResponse forecastPriceResponse = new ForecastPriceResponse(forecastPriceDTO.getCityCode(), forecastPriceDTO.getVehicleType(), price, priceRule.getFareType(), priceRule.getFareVersion());
         return ResponseResult.success(forecastPriceResponse);
     }
 

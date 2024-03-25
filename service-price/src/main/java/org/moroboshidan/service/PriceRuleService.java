@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class PriceRuleService {
@@ -60,5 +61,47 @@ public class PriceRuleService {
         priceRule.setFareType(priceRule.getCityCode() + "$" + priceRule.getVehicleType());
         priceRuleMapper.insert(priceRule);
         return ResponseResult.success("");
+    }
+
+    /**
+     * @description: 查询最新的计价规则
+     * @param fareType
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 16:05
+     */
+    public ResponseResult<PriceRule> getNewestPriceRule(String fareType) {
+        LambdaQueryWrapper<PriceRule> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PriceRule::getFareType, fareType);
+        queryWrapper.orderByDesc(PriceRule::getFareVersion);
+        List<PriceRule> priceRules = priceRuleMapper.selectList(queryWrapper);
+        if (priceRules.isEmpty()) {
+            return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
+        }
+        return ResponseResult.success(priceRules.get(0));
+    }
+
+    /**
+     * @description: 检查当前计价规则版本是否为最新
+     * @param fareType
+     * @param fareVersion
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 16:10
+     */
+    public ResponseResult<Boolean> isNewest(String fareType, int fareVersion) {
+        ResponseResult responseResult = getNewestPriceRule(fareType);
+        if (responseResult.getCode() == CommonStatusEnum.PRICE_RULE_EMPTY.getCode()) {
+            return responseResult;
+        }
+        PriceRule priceRule = (PriceRule) responseResult.getData();
+        if (priceRule == null)  {
+            return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_EMPTY.getCode(), CommonStatusEnum.PRICE_RULE_EMPTY.getValue());
+        }
+        if (priceRule.getFareVersion() > fareVersion) {
+            return ResponseResult.success(false);
+        } else {
+            return ResponseResult.success(true);
+        }
     }
 }

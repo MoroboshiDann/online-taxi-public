@@ -4,10 +4,7 @@ import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.service.PriceRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/price-rule")
@@ -22,5 +19,16 @@ public class PriceRuleController {
     @PostMapping("/update")
     public ResponseResult update(@RequestBody PriceRule priceRule) {
         return priceRuleService.update(priceRule);
+    }
+
+
+    @GetMapping("/get-newest")
+    public ResponseResult getNewestPriceRule(@RequestParam String fareType) {
+        return priceRuleService.getNewestPriceRule(fareType);
+    }
+
+    @GetMapping("/is-newest")
+    public ResponseResult isNewest(@RequestParam String fareType, @RequestParam int fareVersion) {
+        return priceRuleService.isNewest(fareType, fareVersion);
     }
 }

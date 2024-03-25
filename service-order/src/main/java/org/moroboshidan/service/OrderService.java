@@ -1,11 +1,16 @@
 package org.moroboshidan.service;
 
+import org.moroboshidan.internalcommon.dto.OrderInfo;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
+import org.moroboshidan.mapper.OrderMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class OrderService {
+    @Autowired
+    private OrderMapper orderMapper;
 
     /**
      * @description: 新增订单
@@ -17,5 +22,11 @@ public class OrderService {
     public ResponseResult add(OrderRequest orderRequest) {
         System.out.println("making order");
         return ResponseResult.success();
+    }
+
+    public void test() {
+        OrderInfo orderInfo = new OrderInfo();
+        orderInfo.setAddress("110000");
+        orderMapper.insert(orderInfo);
     }
 }

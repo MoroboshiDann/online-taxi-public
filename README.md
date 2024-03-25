@@ -13,6 +13,7 @@
 | service-driver-user      | 8086 |
 | api-boss                 | 8087 |
 | api-driver               | 8088 |
+| service-order            | 8089 |
 
 
 

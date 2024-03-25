@@ -14,9 +14,15 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+    /**
+     * @description: 用户下订单，本服务新增订单
+     * @param orderRequest
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 10:25
+     */
     @PostMapping("/add")
     public ResponseResult add(@RequestBody OrderRequest orderRequest) {
-        System.out.println("making order ...");
-        return orderService.addOrder(orderRequest);
+        return orderService.add(orderRequest);
     }
 }

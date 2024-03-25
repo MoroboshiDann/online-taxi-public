@@ -67,7 +67,7 @@ public class PriceRuleController {
      * @author: MoroboshiDan
      * @time: 2024/3/25 20:42
      */
-    @GetMapping("/if-exists")
+    @PostMapping("/if-exists")
     public ResponseResult ifExists(@RequestBody PriceRule priceRule) {
         return priceRuleService.ifExists(priceRule);
     }

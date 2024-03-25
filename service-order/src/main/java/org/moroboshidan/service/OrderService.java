@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.OrderConstants;
 import org.moroboshidan.internalcommon.dto.OrderInfo;
+import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
 import org.moroboshidan.internalcommon.util.RedisUtils;
@@ -40,13 +41,17 @@ public class OrderService {
         if (!(isNewest.getData())) {
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(), CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
         }
+        // 判断设备是否为黑名单设备
+        if (isBlacklisted(orderRequest.getDeviceCode())) {
+            return ResponseResult.fail(CommonStatusEnum.DEVICE_IS_BLACKLISTED.getCode(), CommonStatusEnum.DEVICE_IS_BLACKLISTED.getValue());
+        }
         // 判断有正在进行的订单，不允许下单
         if (hasOrderInProcess(orderRequest.getPassengerId())) {
             return ResponseResult.fail(CommonStatusEnum.ORDER_IN_PROCESS.getCode(), CommonStatusEnum.ORDER_IN_PROCESS.getValue());
         }
-        // 判断设备是否为黑名单设备
-        if (isBlacklisted(orderRequest.getDeviceCode())) {
-            return ResponseResult.fail(CommonStatusEnum.DEVICE_IS_BLACKLISTED.getCode(), CommonStatusEnum.DEVICE_IS_BLACKLISTED.getValue());
+        // 判断该地区是否开通业务
+        if (!isPriceRuleExists(orderRequest)) {
+            return ResponseResult.fail(CommonStatusEnum.NOT_IN_SERVICE_REGION.getCode(), CommonStatusEnum.NOT_IN_SERVICE_REGION.getValue());
         }
         System.out.println("making order");
         OrderInfo orderInfo = new OrderInfo();
@@ -95,12 +100,28 @@ public class OrderService {
         // 检查redis
         if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(deviceCodeKey))) {
             if (Integer.parseInt(Objects.requireNonNull(stringRedisTemplate.opsForValue().get(deviceCodeKey))) >= 2) {
-                return false;
+                return true;
             }
             stringRedisTemplate.opsForValue().increment(deviceCodeKey);
         }
         // 每小时只能下单两次
         stringRedisTemplate.opsForValue().setIfAbsent(deviceCodeKey, "1", 1L, TimeUnit.HOURS);
-        return true;
+        return false;
+    }
+
+    /**
+     * @description: 检查计价规则是否存在
+     * @param orderRequest
+     * @return: boolean
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 20:58
+     */
+    private boolean isPriceRuleExists(OrderRequest orderRequest) {
+        String[] s = orderRequest.getFareType().split("\\$");
+        PriceRule priceRule = new PriceRule();
+        priceRule.setCityCode(s[0]);
+        priceRule.setCityCode(s[1]);
+        ResponseResult<Boolean> priceRuleExists = servicePriceClient.isPriceRuleExists(priceRule);
+        return priceRuleExists.getData();
     }
 }

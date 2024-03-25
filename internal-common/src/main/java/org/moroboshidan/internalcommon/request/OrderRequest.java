@@ -27,4 +27,5 @@ public class OrderRequest {
     private String destLatitude;
     private Integer encrypt;
     private String fareType;
+    private Integer fareVersion;
 }

@@ -25,9 +25,4 @@ public class OrderController {
     public ResponseResult add(@RequestBody OrderRequest orderRequest) {
         return orderService.add(orderRequest);
     }
-
-    @PostMapping("/test")
-    public void test() {
-        orderService.test();
-    }
 }

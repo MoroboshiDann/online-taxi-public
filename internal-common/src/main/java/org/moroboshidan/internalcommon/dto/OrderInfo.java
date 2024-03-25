@@ -82,6 +82,7 @@ public class OrderInfo implements Serializable {
      * 收费类型
      */
     private String fareType;
+    private Integer fareVersion;
 
     /**
      * 接到订单时，司机初始位置经纬度

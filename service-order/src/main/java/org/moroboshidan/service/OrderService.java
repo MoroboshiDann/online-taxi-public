@@ -9,6 +9,7 @@ import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
 import org.moroboshidan.internalcommon.util.RedisUtils;
 import org.moroboshidan.mapper.OrderMapper;
+import org.moroboshidan.remote.ServiceDriverUserClient;
 import org.moroboshidan.remote.ServicePriceClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class OrderService {
     private ServicePriceClient servicePriceClient;
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+    @Autowired
+    private ServiceDriverUserClient serviceDriverUserClient;
 
     /**
      * @param orderRequest
@@ -53,6 +56,10 @@ public class OrderService {
         if (!isPriceRuleExists(orderRequest)) {
             return ResponseResult.fail(CommonStatusEnum.NOT_IN_SERVICE_REGION.getCode(), CommonStatusEnum.NOT_IN_SERVICE_REGION.getValue());
         }
+        // 判断该地区是否有可用司机
+        if (!hasAvailableDriver(orderRequest.getAddress())) {
+            return ResponseResult.fail(CommonStatusEnum.NO_AVAILABLE_DRIVER.getCode(), CommonStatusEnum.NO_AVAILABLE_DRIVER.getValue());
+        }
         System.out.println("making order");
         OrderInfo orderInfo = new OrderInfo();
         BeanUtils.copyProperties(orderRequest, orderInfo);
@@ -62,6 +69,17 @@ public class OrderService {
         orderInfo.setGmtUpdate(now);
         orderMapper.insert(orderInfo);
         return ResponseResult.success();
+    }
+
+    /**
+     * @description: 根据城市编码查询当前城市是否有可用司机
+     * @param cityCode
+     * @return: boolean
+     * @author: MoroboshiDan
+     * @time: 2024/3/26 18:54
+     */
+    private boolean hasAvailableDriver(String cityCode) {
+        return serviceDriverUserClient.hasAvailableDrivers(cityCode).getData();
     }
 
     /**
@@ -120,7 +138,7 @@ public class OrderService {
         String[] s = orderRequest.getFareType().split("\\$");
         PriceRule priceRule = new PriceRule();
         priceRule.setCityCode(s[0]);
-        priceRule.setCityCode(s[1]);
+        priceRule.setVehicleType(s[1]);
         ResponseResult<Boolean> priceRuleExists = servicePriceClient.isPriceRuleExists(priceRule);
         return priceRuleExists.getData();
     }

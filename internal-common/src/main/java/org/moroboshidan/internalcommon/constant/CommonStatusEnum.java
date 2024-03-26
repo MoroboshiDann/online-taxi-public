@@ -43,6 +43,7 @@ public enum CommonStatusEnum {
     ORDER_IN_PROCESS(1600, "有正在进行的订单"),
     DEVICE_IS_BLACKLISTED(1601, "该设备短期内超过了下单次数"),
     NOT_IN_SERVICE_REGION(1602, "当前城市未开通服务"),
+    NO_AVAILABLE_DRIVER(1603, "当前没有可用司机"),
     ;
 
     @Getter

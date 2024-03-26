@@ -45,4 +45,15 @@ public class DriverUserController {
         return driverUserService.getDriverUserByPhone(driverPhone);
     }
 
+    /**
+     * @description: 根据城市编码查询当前城市是否有可用司机
+     * @param cityCode
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult<java.lang.Boolean>
+     * @author: MoroboshiDan
+     * @time: 2024/3/26 18:51
+     */
+    @GetMapping("/has-available-drivers")
+    public ResponseResult<Boolean> hasAvailableDriver(String cityCode) {
+        return driverUserService.hasAvailableDriver(cityCode);
+    }
 }

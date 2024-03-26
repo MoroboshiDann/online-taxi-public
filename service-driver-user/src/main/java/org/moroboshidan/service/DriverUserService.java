@@ -1,6 +1,5 @@
 package org.moroboshidan.service;
 
-import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.DriverCarConstants;
 import org.moroboshidan.internalcommon.dto.DriverUser;
 import org.moroboshidan.internalcommon.dto.DriverUserWorkStatus;
@@ -63,5 +62,10 @@ public class DriverUserService {
             driverUserExistsResponse.setIfExists(DriverCarConstants.DRIVER_EXISTS);
         }
         return ResponseResult.success(driverUserExistsResponse);
+    }
+
+    public ResponseResult<Boolean> hasAvailableDriver(String cityCode) {
+        boolean flag = driverUserMapper.selectDriverCountByCityCode(cityCode) > 0;
+        return ResponseResult.success(flag);
     }
 }

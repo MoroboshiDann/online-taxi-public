@@ -11,7 +11,7 @@
  Target Server Version : 80035
  File Encoding         : 65001
 
- Date: 24/03/2024 20:06:50
+ Date: 26/03/2024 20:57:25
 */
 
 SET NAMES utf8mb4;
@@ -59,7 +59,7 @@ CREATE TABLE `car`  (
   `gmt_create` datetime NULL DEFAULT NULL,
   `gmt_update` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1771448262407843842 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
+) ENGINE = InnoDB AUTO_INCREMENT = 1771853769371152385 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
 -- ----------------------------
 -- Records of car
@@ -125,7 +125,7 @@ CREATE TABLE `driver_user`  (
 -- ----------------------------
 -- Records of driver_user
 -- ----------------------------
-INSERT INTO `driver_user` VALUES (1, 'add', '张三', '12812311231', 1, '2022-01-01', '01', 'contact address', '0001', '2022-01-01', '2022-01-01', '2222-01-01', 1, '0001', 'organization', '2022-02-02', '2022-02-02', '2022-02-02', '2022-02-02', '2022-02-02', 3, 'company', '2022-02-02', '2222-02-03', 0, '2024-03-22 17:12:09', '2024-03-22 17:12:09');
+INSERT INTO `driver_user` VALUES (1, '110000', '张三', '12812311231', 1, '2022-01-01', '01', 'contact address', '0001', '2022-01-01', '2022-01-01', '2222-01-01', 1, '0001', 'organization', '2022-02-02', '2022-02-02', '2022-02-02', '2022-02-02', '2022-02-02', 3, 'company', '2022-02-02', '2222-02-03', 0, '2024-03-26 18:39:27', '2024-03-26 18:39:27');
 
 -- ----------------------------
 -- Table structure for driver_user_work_status
@@ -144,5 +144,11 @@ CREATE TABLE `driver_user_work_status`  (
 -- Records of driver_user_work_status
 -- ----------------------------
 INSERT INTO `driver_user_work_status` VALUES (1, 1, 0, NULL, '2024-03-23 20:55:38');
+
+-- ----------------------------
+-- View structure for v_city_driver_user_work_status
+-- ----------------------------
+DROP VIEW IF EXISTS `v_city_driver_user_work_status`;
+CREATE ALGORITHM = UNDEFINED SQL SECURITY DEFINER VIEW `v_city_driver_user_work_status` AS select `t1`.`id` AS `driver_id`,`t1`.`address` AS `city_code`,`t2`.`work_status` AS `work_status` from (`driver_user` `t1` left join `driver_user_work_status` `t2` on((`t1`.`id` = `t2`.`driver_id`)));
 
 SET FOREIGN_KEY_CHECKS = 1;

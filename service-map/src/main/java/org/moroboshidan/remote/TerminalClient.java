@@ -68,7 +68,7 @@ public class TerminalClient {
         List<TerminalResponse> list = new ArrayList<>();
         for (Object result : results) {
             JSONObject jsonObject = JSONObject.fromObject(result);
-            list.add(new TerminalResponse(jsonObject.getString("tid"), jsonObject.getLong("desc")));
+            list.add(new TerminalResponse(jsonObject.getString("tid"), Long.parseLong(jsonObject.getString("desc"))));
         }
         return ResponseResult.success(list);
     }

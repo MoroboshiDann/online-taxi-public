@@ -8,6 +8,7 @@ import org.moroboshidan.internalcommon.dto.OrderInfo;
 import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
+import org.moroboshidan.internalcommon.response.OrderDriverResponse;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
 import org.moroboshidan.internalcommon.util.RedisUtils;
 import org.moroboshidan.mapper.OrderMapper;
@@ -152,7 +153,7 @@ public class OrderService {
         return priceRuleExists.getData();
     }
 
-    private void dispatchRealTimeOrder(OrderInfo orderInfo) {
+    private ResponseResult dispatchRealTimeOrder(OrderInfo orderInfo) {
         String depLongitude = orderInfo.getDepLongitude();
         String depLatitude = orderInfo.getDepLatitude();
         String center = depLatitude+ "," + depLongitude;
@@ -168,21 +169,31 @@ public class OrderService {
             }
             // 解析结果，根据返回的tid 和 carId查询车辆信息
             for (TerminalResponse terminalResponse : terminalResponseList) {
-                ResponseResult<Boolean> carById = serviceDriverUserClient.getCarById(terminalResponse.getCarId());
+                Long carId = terminalResponse.getCarId();
+                // 找到carId对应的车辆信息，并且该车辆是出车状态
+                OrderDriverResponse response = serviceDriverUserClient.getAvailableDriver(carId).getData();
+                // 找到该车辆对应的司机，然后确定该司机没有正在进行的订单
+                LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.eq(OrderInfo::getDriverId, response.getDriverId());
+                queryWrapper.and(wrapper -> wrapper
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.ORDER_START).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.PASSENGER_GETOFF).or()
+                        .eq(OrderInfo::getOrderStatus, OrderConstants.TO_START_PAY).or());
+                if (orderMapper.selectCount(queryWrapper) != 0) {
+                    return ResponseResult.fail(CommonStatusEnum.ORDER_IN_PROCESS.getCode(), CommonStatusEnum.ORDER_IN_PROCESS.getValue());
+                }
+                orderInfo.setCarId(carId);
+                orderInfo.setDriverId(response.getDriverId());
+                orderInfo.setDirverPhone(response.getDriverPhone());
+                orderMapper.updateById(orderInfo);
             }
 
         }
-        // List<TerminalResponse> terminalResponseList = serviceMapClient.terminalAroundSearch(center, radius).getData();
-        // if (terminalResponseList.isEmpty()) {
-        //     radius = 4000;
-        //     terminalResponseList = serviceMapClient.terminalAroundSearch(center, radius).getData();
-        //     if (terminalResponseList.isEmpty()) {
-        //         radius = 5000;
-        //         terminalResponseList = serviceMapClient.terminalAroundSearch(center, radius).getData();
-        //         if (terminalResponseList.isEmpty()) {
-        //             log.info("本轮没有找到车，找了2km 4km 5km");
-        //         }
-        //     }
-        // }
+        return null;
     }
 }

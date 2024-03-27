@@ -2,6 +2,7 @@ package org.moroboshidan.controller;
 
 import org.moroboshidan.internalcommon.dto.DriverUser;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.response.OrderDriverResponse;
 import org.moroboshidan.service.DriverUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -55,5 +56,10 @@ public class DriverUserController {
     @GetMapping("/has-available-drivers")
     public ResponseResult<Boolean> hasAvailableDriver(String cityCode) {
         return driverUserService.hasAvailableDriver(cityCode);
+    }
+
+    @GetMapping("/get-available-driver/{carId}")
+    public ResponseResult<OrderDriverResponse> getAvailableDriver(@PathVariable Long carId) {
+        return driverUserService.getAvailableDriver(carId);
     }
 }

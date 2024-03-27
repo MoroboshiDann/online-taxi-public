@@ -27,7 +27,7 @@ public class CarController {
     }
 
     @GetMapping("/car")
-    public ResponseResult getById(Long carId) {
+    public ResponseResult<Car> getById(Long carId) {
         return carService.getById(carId);
     }
 }

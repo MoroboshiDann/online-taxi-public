@@ -1,9 +1,12 @@
 package org.moroboshidan.service;
 
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.response.TerminalResponse;
 import org.moroboshidan.remote.TerminalClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TerminalService {
@@ -26,7 +29,7 @@ public class TerminalService {
      * @param radius
      * @return
      */
-    public ResponseResult aroundSearch(String center, Integer radius) {
+    public ResponseResult<List<TerminalResponse>> aroundSearch(String center, Integer radius) {
         return terminalClient.aroundSearch(center, radius);
     }
 }

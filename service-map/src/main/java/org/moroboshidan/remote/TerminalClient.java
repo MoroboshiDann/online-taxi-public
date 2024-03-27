@@ -60,9 +60,10 @@ public class TerminalClient {
                 .append("&radius=").append(radius);
         log.info("searching url: " + url);
         ResponseEntity<String> forEntity = restTemplate.postForEntity(url.toString(), null, String.class);
-        JSONArray results = JSONObject.fromObject(forEntity.getBody())
-                                        .getJSONObject("data")
-                                        .getJSONArray("results");
+        JSONObject data = JSONObject.fromObject(forEntity.getBody())
+                                        .getJSONObject("data");
+        log.info("data: " + data);
+        JSONArray results = data.getJSONArray("results");
         log.info("searching results:" + results);
         List<TerminalResponse> list = new ArrayList<>();
         for (Object result : results) {

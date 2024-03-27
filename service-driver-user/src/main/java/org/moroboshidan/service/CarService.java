@@ -39,7 +39,7 @@ public class CarService {
         return ResponseResult.success();
     }
 
-    public ResponseResult getById(Long carId) {
+    public ResponseResult<Car> getById(Long carId) {
         LambdaQueryWrapper<Car> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Car::getId, carId);
         List<Car> cars = carMapper.selectList(queryWrapper);

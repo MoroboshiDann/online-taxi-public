@@ -1,11 +1,15 @@
 package org.moroboshidan.controller;
 
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.response.TerminalResponse;
 import org.moroboshidan.service.TerminalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/terminal")
@@ -31,7 +35,7 @@ public class TerminalController {
      * @return
      */
     @PostMapping("/aroundsearch")
-    public ResponseResult aroundSearch(String center, Integer radius) {
+    public ResponseResult<List<TerminalResponse>> aroundSearch(@RequestParam String center, @RequestParam Integer radius) {
         return terminalService.aroundSearch(center, radius);
     }
 }

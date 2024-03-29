@@ -26,7 +26,6 @@ public class OrderController {
      */
     @PostMapping("/add")
     public ResponseResult add(@RequestBody OrderRequest orderRequest, HttpServletRequest httpServletRequest) {
-        orderRequest.setDeviceCode(httpServletRequest.getHeader(HeaderParamConstants.DEVICE_CODE));
         return orderService.add(orderRequest);
     }
 }

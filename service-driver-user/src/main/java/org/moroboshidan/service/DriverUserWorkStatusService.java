@@ -1,5 +1,6 @@
 package org.moroboshidan.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.moroboshidan.internalcommon.dto.DriverUserWorkStatus;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.mapper.DriverUserWorkStatusMapper;
@@ -16,13 +17,12 @@ public class DriverUserWorkStatusService {
     @Autowired
     private DriverUserWorkStatusMapper driverUserWorkStatusMapper;
     public ResponseResult changeWorkStatus(Long driverId, Integer workStatus) {
-        Map<String, Object> queryMap = new HashMap<>();
-        queryMap.put("driver_id", driverId);
-        List<DriverUserWorkStatus> driverUserWorkStatuses = driverUserWorkStatusMapper.selectByMap(queryMap);
-        DriverUserWorkStatus driverUserWorkStatus = driverUserWorkStatuses.get(0);
-        driverUserWorkStatus.setWorkStatus(workStatus);
-        driverUserWorkStatus.setGmtModified(LocalDateTime.now());
-        driverUserWorkStatusMapper.updateById(driverUserWorkStatus);
+        LambdaQueryWrapper<DriverUserWorkStatus> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(DriverUserWorkStatus::getDriverId, driverId);
+        DriverUserWorkStatus driverUserWorkStatusRecord = driverUserWorkStatusMapper.selectOne(queryWrapper);
+        driverUserWorkStatusRecord.setWorkStatus(workStatus);
+        driverUserWorkStatusRecord.setGmtModified(LocalDateTime.now());
+        driverUserWorkStatusMapper.updateById(driverUserWorkStatusRecord);
         return ResponseResult.success();
     }
 }

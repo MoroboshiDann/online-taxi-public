@@ -44,6 +44,8 @@ public class DriverUserService {
         DriverUserWorkStatus driverUserWorkStatus = new DriverUserWorkStatus();
         driverUserWorkStatus.setDriverId(driverUser.getId());
         driverUserWorkStatus.setWorkStatus(DriverCarConstants.DRIVER_WORK_STATUS_OFF_WORK);
+        driverUserWorkStatus.setGmtCreate(LocalDateTime.now());
+        driverUserWorkStatus.setGmtModified(LocalDateTime.now());
         driverUserWorkStatusMapper.insert(driverUserWorkStatus);
         return ResponseResult.success();
     }
@@ -89,7 +91,9 @@ public class DriverUserService {
         bindingRelationshipWrapper.eq(DriverCarBindingRelationship::getCarId, carId);
         bindingRelationshipWrapper.eq(DriverCarBindingRelationship::getBindState, DriverCarConstants.DRIVER_CAR_BIND);
         DriverCarBindingRelationship relationship = driverCarBindingRelationshipMapper.selectOne(bindingRelationshipWrapper);
-
+        if (relationship == null) {
+            return ResponseResult.fail(CommonStatusEnum.NO_AVAILABLE_DRIVER.getCode(), CommonStatusEnum.NO_AVAILABLE_DRIVER.getValue());
+        }
         LambdaQueryWrapper<DriverUserWorkStatus> workStatusWrapper = new LambdaQueryWrapper<>();
         workStatusWrapper.eq(DriverUserWorkStatus::getDriverId, relationship.getDriverId());
         workStatusWrapper.eq(DriverUserWorkStatus::getWorkStatus, DriverCarConstants.DRIVER_WORK_STATUS_ONGOING);

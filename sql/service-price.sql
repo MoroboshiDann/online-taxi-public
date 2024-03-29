@@ -11,7 +11,7 @@
  Target Server Version : 80035
  File Encoding         : 65001
 
- Date: 25/03/2024 21:06:51
+ Date: 28/03/2024 19:31:59
 */
 
 SET NAMES utf8mb4;
@@ -39,5 +39,6 @@ CREATE TABLE `price_rule`  (
 INSERT INTO `price_rule` VALUES ('110000', '1', 15.00, 3, 3.20, 1.00, '110000$1', 1);
 INSERT INTO `price_rule` VALUES ('110000', '1', 12.00, 2, 3.20, 2.00, '110000$1', 2);
 INSERT INTO `price_rule` VALUES ('130000', '2', 10.00, 2, 2.00, 0.50, '130000$2', 1);
+INSERT INTO `price_rule` VALUES ('420100', '1', 10.00, 2, 3.20, 0.10, '420100$1', 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

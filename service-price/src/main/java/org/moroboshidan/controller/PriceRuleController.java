@@ -2,6 +2,7 @@ package org.moroboshidan.controller;
 
 import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.request.PriceRuleRequest;
 import org.moroboshidan.service.PriceRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,15 +50,14 @@ public class PriceRuleController {
 
     /**
      * @description: 检查计价规则是否是最新版本
-     * @param fareType
-     * @param fareVersion
+     * @param priceRuleRequest
      * @return: org.moroboshidan.internalcommon.dto.ResponseResult
      * @author: MoroboshiDan
-     * @time: 2024/3/25 20:42
+     * @time: 2024/3/28 15:59
      */
-    @GetMapping("/is-newest")
-    public ResponseResult isNewest(@RequestParam String fareType, @RequestParam int fareVersion) {
-        return priceRuleService.isNewest(fareType, fareVersion);
+    @PostMapping("/is-newest")
+    public ResponseResult isNewest(@RequestBody PriceRuleRequest priceRuleRequest) {
+        return priceRuleService.isNewest(priceRuleRequest.getFareType(), priceRuleRequest.getFareVersion());
     }
 
     /**

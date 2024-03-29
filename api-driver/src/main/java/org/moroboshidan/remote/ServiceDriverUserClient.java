@@ -2,6 +2,7 @@ package org.moroboshidan.remote;
 
 import org.moroboshidan.internalcommon.dto.Car;
 import org.moroboshidan.internalcommon.dto.DriverUser;
+import org.moroboshidan.internalcommon.dto.DriverUserWorkStatus;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.VerificationCodeDTO;
 import org.moroboshidan.internalcommon.response.DriverUserExistsResponse;
@@ -18,4 +19,7 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/car")
     ResponseResult<Car> getByCarId(@RequestParam Long carId);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/driver-user-work-status")
+    ResponseResult changeWorkStatus(@RequestBody DriverUserWorkStatus driverUserWorkStatus);
 }

@@ -8,6 +8,7 @@ import org.moroboshidan.internalcommon.dto.OrderInfo;
 import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
+import org.moroboshidan.internalcommon.request.PriceRuleRequest;
 import org.moroboshidan.internalcommon.response.OrderDriverResponse;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
 import org.moroboshidan.internalcommon.util.RedisUtils;
@@ -48,13 +49,14 @@ public class OrderService {
      * @time: 2024/3/25 10:26
      */
     public ResponseResult add(OrderRequest orderRequest) {
+        log.info(orderRequest.toString());
         // 判断计价规则是否为最新
-        ResponseResult<Boolean> isNewest = servicePriceClient.isNewest(orderRequest.getFareType(), orderRequest.getFareVersion());
+        ResponseResult<Boolean> isNewest = servicePriceClient.isNewest(new PriceRuleRequest(orderRequest.getFareType(), orderRequest.getFareVersion()));
         if (!(isNewest.getData())) {
             return ResponseResult.fail(CommonStatusEnum.PRICE_RULE_CHANGED.getCode(), CommonStatusEnum.PRICE_RULE_CHANGED.getValue());
         }
         // 判断有正在进行的订单，不允许下单
-        if (hasOrderInProcess(orderRequest.getPassengerId())) {
+        if (hasOrderInProcessPassenger(orderRequest.getPassengerId())) {
             return ResponseResult.fail(CommonStatusEnum.ORDER_IN_PROCESS.getCode(), CommonStatusEnum.ORDER_IN_PROCESS.getValue());
         }
         // 判断该地区是否开通业务
@@ -99,7 +101,7 @@ public class OrderService {
      * @author: MoroboshiDan
      * @time: 2024/3/25 20:24
      */
-    private boolean hasOrderInProcess(Long passengerId) {
+    private boolean hasOrderInProcessPassenger(Long passengerId) {
         // 判断有正在进行的订单，不允许下单
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getPassengerId, passengerId);
@@ -113,6 +115,28 @@ public class OrderService {
                 .eq(OrderInfo::getOrderStatus, OrderConstants.PASSENGER_GETOFF).or()
                 .eq(OrderInfo::getOrderStatus, OrderConstants.TO_START_PAY).or());
         int count = orderMapper.selectCount(queryWrapper);
+        return count > 0;
+    }
+
+    /**
+     * @param driverId
+     * @description: 检查当前乘客id是否有对应的正在进行的订单
+     * @return: boolean
+     * @author: MoroboshiDan
+     * @time: 2024/3/25 20:24
+     */
+    private boolean hasOrderInProcessDriver(Long driverId) {
+        // 判断有正在进行的订单，不允许下单
+        LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderInfo::getDriverId, driverId);
+        queryWrapper.and(wrapper -> wrapper
+                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
+                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
+                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or());
+        int count = orderMapper.selectCount(queryWrapper);
+        log.info("driver's orders in process: " + count);
         return count > 0;
     }
 
@@ -156,11 +180,12 @@ public class OrderService {
     private ResponseResult dispatchRealTimeOrder(OrderInfo orderInfo) {
         String depLongitude = orderInfo.getDepLongitude();
         String depLatitude = orderInfo.getDepLatitude();
-        String center = depLatitude+ "," + depLongitude;
+        String center = depLatitude + "," + depLongitude;
         List<Integer> radiusList = new ArrayList<>();
         radiusList.add(2000);
         radiusList.add(4000);
         radiusList.add(5000);
+        boolean flag = false;
         for (Integer radius : radiusList) {
             List<TerminalResponse> terminalResponseList = serviceMapClient.terminalAroundSearch(center, radius).getData();
             log.info("当前搜索半径为：" + radius + "m, 搜索结果为" + terminalResponseList.size());
@@ -170,30 +195,33 @@ public class OrderService {
             // 解析结果，根据返回的tid 和 carId查询车辆信息
             for (TerminalResponse terminalResponse : terminalResponseList) {
                 Long carId = terminalResponse.getCarId();
+                log.info("当前判断id为:" + carId + "的车辆");
                 // 找到carId对应的车辆信息，并且该车辆是出车状态
-                OrderDriverResponse response = serviceDriverUserClient.getAvailableDriver(carId).getData();
+                ResponseResult<OrderDriverResponse> result = serviceDriverUserClient.getAvailableDriver(carId);
+                if (result.getCode() == CommonStatusEnum.NO_AVAILABLE_DRIVER.getCode()) {
+                    continue;
+                }
+                OrderDriverResponse availableDriver = result.getData();
                 // 找到该车辆对应的司机，然后确定该司机没有正在进行的订单
-                LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
-                queryWrapper.eq(OrderInfo::getDriverId, response.getDriverId());
-                queryWrapper.and(wrapper -> wrapper
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.ORDER_START).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.PASSENGER_GETOFF).or()
-                        .eq(OrderInfo::getOrderStatus, OrderConstants.TO_START_PAY).or());
-                if (orderMapper.selectCount(queryWrapper) != 0) {
-                    return ResponseResult.fail(CommonStatusEnum.ORDER_IN_PROCESS.getCode(), CommonStatusEnum.ORDER_IN_PROCESS.getValue());
+                if (hasOrderInProcessDriver(availableDriver.getDriverId())) {
+                    continue;
                 }
                 orderInfo.setCarId(carId);
-                orderInfo.setDriverId(response.getDriverId());
-                orderInfo.setDirverPhone(response.getDriverPhone());
+                orderInfo.setDriverId(availableDriver.getDriverId());
+                orderInfo.setDirverPhone(availableDriver.getDriverPhone());
                 orderMapper.updateById(orderInfo);
+                flag = true;
+                break;
             }
-
+            if (flag) {
+                break;
+            }
         }
-        return null;
+        if (flag) {
+            log.info("找到车辆");
+        } else {
+            log.info("没找到车辆");
+        }
+        return ResponseResult.success();
     }
 }

@@ -11,7 +11,7 @@
  Target Server Version : 80035
  File Encoding         : 65001
 
- Date: 25/03/2024 21:07:03
+ Date: 28/03/2024 19:31:48
 */
 
 SET NAMES utf8mb4;
@@ -65,10 +65,11 @@ CREATE TABLE `order_info`  (
   `gmt_create` datetime NULL DEFAULT NULL,
   `gmt_update` datetime NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1772895186432409601 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of order_info
 -- ----------------------------
+INSERT INTO `order_info` VALUES (1773271514134474753, 1770349562436624385, '15212311231', 1773248862904758273, '13812311231', 1773249969211158530, '420100', '2022-02-02 05:00:00', '2022-02-02 05:00:00', '地址', '114.27134', '30.58242', '目的地', '114.41349', '30.50914', 1, '420100$1', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, '2024-03-28 16:50:49', '2024-03-28 16:50:49');
 
 SET FOREIGN_KEY_CHECKS = 1;

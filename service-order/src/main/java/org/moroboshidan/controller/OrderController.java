@@ -25,7 +25,7 @@ public class OrderController {
      * @time: 2024/3/25 10:25
      */
     @PostMapping("/add")
-    public ResponseResult add(@RequestBody OrderRequest orderRequest, HttpServletRequest httpServletRequest) {
+    public ResponseResult add(@RequestBody OrderRequest orderRequest) {
         return orderService.add(orderRequest);
     }
 }

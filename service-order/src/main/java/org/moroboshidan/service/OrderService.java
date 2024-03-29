@@ -206,9 +206,20 @@ public class OrderService {
                 if (hasOrderInProcessDriver(availableDriver.getDriverId())) {
                     continue;
                 }
+                log.info("找到了当前没有订单的、正在出车的司机");
+                // 订单匹配司机
                 orderInfo.setCarId(carId);
                 orderInfo.setDriverId(availableDriver.getDriverId());
                 orderInfo.setDirverPhone(availableDriver.getDriverPhone());
+                // 查询当前车辆信息和司机信息
+                // 司机和车辆信息，从service-driver-user中获取
+                orderInfo.setVehicleNo(availableDriver.getVehicleNo());
+                orderInfo.setLicenseId(availableDriver.getLicenseId());
+                orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+                orderInfo.setReceiveOrderTime(LocalDateTime.now());
+                // 以下信息从service-map中获取
+                orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
+                orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
                 orderMapper.updateById(orderInfo);
                 flag = true;
                 break;

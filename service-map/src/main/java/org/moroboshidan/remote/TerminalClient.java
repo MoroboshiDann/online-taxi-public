@@ -42,7 +42,9 @@ public class TerminalClient {
         ResponseEntity<String> forEntity = restTemplate.postForEntity(url.toString(), null, String.class);
         JSONObject result = JSONObject.fromObject(forEntity.getBody());
         String tid = result.getJSONObject("data").getString("tid");
-        return ResponseResult.success(new TerminalResponse(tid, null));
+        TerminalResponse terminalResponse = new TerminalResponse();
+        terminalResponse.setTid(tid);
+        return ResponseResult.success(terminalResponse);
     }
 
     /**
@@ -68,7 +70,9 @@ public class TerminalClient {
         List<TerminalResponse> list = new ArrayList<>();
         for (Object result : results) {
             JSONObject jsonObject = JSONObject.fromObject(result);
-            list.add(new TerminalResponse(jsonObject.getString("tid"), Long.parseLong(jsonObject.getString("desc"))));
+            // desc 是车辆id，
+            JSONObject location = jsonObject.getJSONObject("location");
+            list.add(new TerminalResponse(jsonObject.getString("tid"), Long.parseLong(jsonObject.getString("desc")), location.getString("longitude"), location.getString("latitude")));
         }
         return ResponseResult.success(list);
     }

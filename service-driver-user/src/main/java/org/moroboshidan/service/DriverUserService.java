@@ -3,12 +3,10 @@ package org.moroboshidan.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.DriverCarConstants;
-import org.moroboshidan.internalcommon.dto.DriverCarBindingRelationship;
-import org.moroboshidan.internalcommon.dto.DriverUser;
-import org.moroboshidan.internalcommon.dto.DriverUserWorkStatus;
-import org.moroboshidan.internalcommon.dto.ResponseResult;
+import org.moroboshidan.internalcommon.dto.*;
 import org.moroboshidan.internalcommon.response.DriverUserExistsResponse;
 import org.moroboshidan.internalcommon.response.OrderDriverResponse;
+import org.moroboshidan.mapper.CarMapper;
 import org.moroboshidan.mapper.DriverCarBindingRelationshipMapper;
 import org.moroboshidan.mapper.DriverUserMapper;
 import org.moroboshidan.mapper.DriverUserWorkStatusMapper;
@@ -30,6 +28,8 @@ public class DriverUserService {
     private DriverUserWorkStatusMapper driverUserWorkStatusMapper;
     @Autowired
     private DriverCarBindingRelationshipMapper driverCarBindingRelationshipMapper;
+    @Autowired
+    private CarMapper carMapper;
 
     public ResponseResult tetGetDriverUser() {
         DriverUser driverUser = driverUserMapper.selectById(1);
@@ -86,7 +86,7 @@ public class DriverUserService {
      * @time: 2024/3/27 16:25
      */
     public ResponseResult<OrderDriverResponse> getAvailableDriver(Long carId) {
-
+        // 查询车辆司机绑定关系，以获取司机id
         LambdaQueryWrapper<DriverCarBindingRelationship> bindingRelationshipWrapper = new LambdaQueryWrapper<>();
         bindingRelationshipWrapper.eq(DriverCarBindingRelationship::getCarId, carId);
         bindingRelationshipWrapper.eq(DriverCarBindingRelationship::getBindState, DriverCarConstants.DRIVER_CAR_BIND);
@@ -94,6 +94,7 @@ public class DriverUserService {
         if (relationship == null) {
             return ResponseResult.fail(CommonStatusEnum.NO_AVAILABLE_DRIVER.getCode(), CommonStatusEnum.NO_AVAILABLE_DRIVER.getValue());
         }
+        // 根据司机id查询司机工作状态
         LambdaQueryWrapper<DriverUserWorkStatus> workStatusWrapper = new LambdaQueryWrapper<>();
         workStatusWrapper.eq(DriverUserWorkStatus::getDriverId, relationship.getDriverId());
         workStatusWrapper.eq(DriverUserWorkStatus::getWorkStatus, DriverCarConstants.DRIVER_WORK_STATUS_ONGOING);
@@ -101,9 +102,15 @@ public class DriverUserService {
         if (driverUserWorkStatus == null) {
             return ResponseResult.fail(CommonStatusEnum.NO_AVAILABLE_DRIVER.getCode(), CommonStatusEnum.NO_AVAILABLE_DRIVER.getValue());
         }
+        // 根据司机id查询司机信息
         LambdaQueryWrapper<DriverUser> driverUserWrapper = new LambdaQueryWrapper<>();
         driverUserWrapper.eq(DriverUser::getId, driverUserWorkStatus.getDriverId());
         DriverUser driverUser = driverUserMapper.selectOne(driverUserWrapper);
-        return ResponseResult.success(new OrderDriverResponse(driverUser.getId(), driverUser.getDriverPhone(), carId));
+        // 根据车辆id查询车辆信息
+        LambdaQueryWrapper<Car> carWrapper = new LambdaQueryWrapper<>();
+        carWrapper.eq(Car::getId, carId);
+        Car car = carMapper.selectOne(carWrapper);
+
+        return ResponseResult.success(new OrderDriverResponse(driverUser.getId(), driverUser.getDriverPhone(), carId, driverUser.getLicenseId(), car.getVehicleNo()));
     }
 }

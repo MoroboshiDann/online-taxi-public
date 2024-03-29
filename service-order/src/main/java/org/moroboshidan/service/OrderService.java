@@ -16,6 +16,8 @@ import org.moroboshidan.mapper.OrderMapper;
 import org.moroboshidan.remote.ServiceDriverUserClient;
 import org.moroboshidan.remote.ServiceMapClient;
 import org.moroboshidan.remote.ServicePriceClient;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -40,6 +42,8 @@ public class OrderService {
     private ServiceDriverUserClient serviceDriverUserClient;
     @Autowired
     private ServiceMapClient serviceMapClient;
+    @Autowired
+    private RedissonClient redissonClient;
 
     /**
      * @param orderRequest
@@ -116,15 +120,7 @@ public class OrderService {
         // 判断有正在进行的订单，不允许下单
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getPassengerId, passengerId);
-        queryWrapper.and(wrapper -> wrapper
-                .eq(OrderInfo::getOrderStatus, OrderConstants.ORDER_START).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.PASSENGER_GETOFF).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.TO_START_PAY).or());
+        queryWrapper.and(wrapper -> wrapper.eq(OrderInfo::getOrderStatus, OrderConstants.ORDER_START).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or().eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or().eq(OrderInfo::getOrderStatus, OrderConstants.PASSENGER_GETOFF).or().eq(OrderInfo::getOrderStatus, OrderConstants.TO_START_PAY).or());
         int count = orderMapper.selectCount(queryWrapper);
         return count > 0;
     }
@@ -140,12 +136,7 @@ public class OrderService {
         // 判断有正在进行的订单，不允许下单
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getDriverId, driverId);
-        queryWrapper.and(wrapper -> wrapper
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_RECEIVE_ORDER).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or());
+        queryWrapper.and(wrapper -> wrapper.eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_RECEIVE_ORDER).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or().eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or().eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or());
         int count = orderMapper.selectCount(queryWrapper);
         log.info("driver's orders in process: " + count);
         return count > 0;
@@ -214,29 +205,33 @@ public class OrderService {
                 }
                 OrderDriverResponse availableDriver = result.getData();
                 Long driverId = availableDriver.getDriverId();
+
+                String lockKey = (driverId + "").intern();
+                RLock lock = redissonClient.getLock(lockKey);
+                lock.lock();
                 // 找到该车辆对应的司机，然后确定该司机没有正在进行的订单
-                synchronized ((driverId + "").intern()) { // 将字符串存入常量池，保证线程获取的都是同一个string对象
-                    if (hasOrderInProcessDriver(driverId)) {
-                        continue;
-                    }
-                    log.info("找到了当前没有订单的、正在出车的司机");
-                    // 订单匹配司机
-                    orderInfo.setCarId(carId);
-                    orderInfo.setDriverId(driverId);
-                    orderInfo.setDirverPhone(availableDriver.getDriverPhone());
-                    // 查询当前车辆信息和司机信息
-                    // 司机和车辆信息，从service-driver-user中获取
-                    orderInfo.setVehicleNo(availableDriver.getVehicleNo());
-                    orderInfo.setLicenseId(availableDriver.getLicenseId());
-                    orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
-                    orderInfo.setReceiveOrderTime(LocalDateTime.now());
-                    // 以下信息从service-map中获取
-                    orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
-                    orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
-                    orderMapper.updateById(orderInfo);
-                    flag = true;
-                    break;
+                if (hasOrderInProcessDriver(driverId)) {
+                    lock.unlock();
+                    continue;
                 }
+                log.info("找到了当前没有订单的、正在出车的司机");
+                // 订单匹配司机
+                orderInfo.setCarId(carId);
+                orderInfo.setDriverId(driverId);
+                orderInfo.setDirverPhone(availableDriver.getDriverPhone());
+                // 查询当前车辆信息和司机信息
+                // 司机和车辆信息，从service-driver-user中获取
+                orderInfo.setVehicleNo(availableDriver.getVehicleNo());
+                orderInfo.setLicenseId(availableDriver.getLicenseId());
+                orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+                orderInfo.setReceiveOrderTime(LocalDateTime.now());
+                // 以下信息从service-map中获取
+                orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
+                orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
+                orderMapper.updateById(orderInfo);
+                flag = true;
+                lock.unlock();
+                break;
             }
             if (flag) {
                 break;

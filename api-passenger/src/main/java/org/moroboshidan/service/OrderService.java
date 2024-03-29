@@ -17,4 +17,8 @@ public class OrderService {
     public ResponseResult addOrder(OrderRequest orderRequest) {
         return serviceOrderClient.addOrder(orderRequest);
     }
+
+    public ResponseResult dispatchOrder(Long orderId) {
+        return serviceOrderClient.dispatchOrder(orderId);
+    }
 }

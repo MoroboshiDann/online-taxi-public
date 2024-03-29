@@ -79,8 +79,19 @@ public class OrderService {
         orderInfo.setGmtCreate(now);
         orderInfo.setGmtUpdate(now);
         orderMapper.insert(orderInfo);
-        dispatchRealTimeOrder(orderInfo);
         return ResponseResult.success();
+    }
+
+    /**
+     * @param orderId
+     * @description: 分发订单
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/29 15:01
+     */
+    public ResponseResult dispatchOrder(Long orderId) {
+        OrderInfo orderInfo = orderMapper.selectById(orderId);
+        return dispatchRealTimeOrder(orderInfo);
     }
 
     /**
@@ -130,7 +141,7 @@ public class OrderService {
         LambdaQueryWrapper<OrderInfo> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderInfo::getDriverId, driverId);
         queryWrapper.and(wrapper -> wrapper
-                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
+                .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_RECEIVE_ORDER).or()
                 .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_TO_PICK_UP_PASSENGER).or()
                 .eq(OrderInfo::getOrderStatus, OrderConstants.DRIVER_ARRIVE_DEPARTURE).or()
                 .eq(OrderInfo::getOrderStatus, OrderConstants.PICK_UP_PASSENGER).or()
@@ -202,27 +213,30 @@ public class OrderService {
                     continue;
                 }
                 OrderDriverResponse availableDriver = result.getData();
+                Long driverId = availableDriver.getDriverId();
                 // 找到该车辆对应的司机，然后确定该司机没有正在进行的订单
-                if (hasOrderInProcessDriver(availableDriver.getDriverId())) {
-                    continue;
+                synchronized ((driverId + "").intern()) { // 将字符串存入常量池，保证线程获取的都是同一个string对象
+                    if (hasOrderInProcessDriver(driverId)) {
+                        continue;
+                    }
+                    log.info("找到了当前没有订单的、正在出车的司机");
+                    // 订单匹配司机
+                    orderInfo.setCarId(carId);
+                    orderInfo.setDriverId(driverId);
+                    orderInfo.setDirverPhone(availableDriver.getDriverPhone());
+                    // 查询当前车辆信息和司机信息
+                    // 司机和车辆信息，从service-driver-user中获取
+                    orderInfo.setVehicleNo(availableDriver.getVehicleNo());
+                    orderInfo.setLicenseId(availableDriver.getLicenseId());
+                    orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
+                    orderInfo.setReceiveOrderTime(LocalDateTime.now());
+                    // 以下信息从service-map中获取
+                    orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
+                    orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
+                    orderMapper.updateById(orderInfo);
+                    flag = true;
+                    break;
                 }
-                log.info("找到了当前没有订单的、正在出车的司机");
-                // 订单匹配司机
-                orderInfo.setCarId(carId);
-                orderInfo.setDriverId(availableDriver.getDriverId());
-                orderInfo.setDirverPhone(availableDriver.getDriverPhone());
-                // 查询当前车辆信息和司机信息
-                // 司机和车辆信息，从service-driver-user中获取
-                orderInfo.setVehicleNo(availableDriver.getVehicleNo());
-                orderInfo.setLicenseId(availableDriver.getLicenseId());
-                orderInfo.setOrderStatus(OrderConstants.DRIVER_RECEIVE_ORDER);
-                orderInfo.setReceiveOrderTime(LocalDateTime.now());
-                // 以下信息从service-map中获取
-                orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
-                orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
-                orderMapper.updateById(orderInfo);
-                flag = true;
-                break;
             }
             if (flag) {
                 break;
@@ -235,4 +249,5 @@ public class OrderService {
         }
         return ResponseResult.success();
     }
+
 }

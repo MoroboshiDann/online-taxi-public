@@ -5,10 +5,7 @@ import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.request.OrderRequest;
 import org.moroboshidan.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -27,5 +24,10 @@ public class OrderController {
     @PostMapping("/add")
     public ResponseResult add(@RequestBody OrderRequest orderRequest) {
         return orderService.add(orderRequest);
+    }
+
+    @PostMapping("/dispatchOrder/{orderId}")
+    public ResponseResult dispatchOrder(@PathVariable Long orderId) {
+        return orderService.dispatchOrder(orderId);
     }
 }

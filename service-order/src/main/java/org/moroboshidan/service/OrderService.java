@@ -187,7 +187,6 @@ public class OrderService {
         radiusList.add(2000);
         radiusList.add(4000);
         radiusList.add(5000);
-        boolean flag = false;
         for (Integer radius : radiusList) {
             List<TerminalResponse> terminalResponseList = serviceMapClient.terminalAroundSearch(center, radius).getData();
             log.info("当前搜索半径为：" + radius + "m, 搜索结果为" + terminalResponseList.size());
@@ -229,19 +228,11 @@ public class OrderService {
                 orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
                 orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
                 orderMapper.updateById(orderInfo);
-                flag = true;
                 lock.unlock();
-                break;
-            }
-            if (flag) {
-                break;
+                return ResponseResult.success();
             }
         }
-        if (flag) {
-            log.info("找到车辆");
-        } else {
-            log.info("没找到车辆");
-        }
+        log.info("没找到车辆");
         return ResponseResult.success();
     }
 

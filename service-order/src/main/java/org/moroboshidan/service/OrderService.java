@@ -3,6 +3,7 @@ package org.moroboshidan.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
+import org.moroboshidan.internalcommon.constant.IdentityConstant;
 import org.moroboshidan.internalcommon.constant.OrderConstants;
 import org.moroboshidan.internalcommon.dto.OrderInfo;
 import org.moroboshidan.internalcommon.dto.PriceRule;
@@ -16,6 +17,7 @@ import org.moroboshidan.mapper.OrderMapper;
 import org.moroboshidan.remote.ServiceDriverUserClient;
 import org.moroboshidan.remote.ServiceMapClient;
 import org.moroboshidan.remote.ServicePriceClient;
+import org.moroboshidan.remote.ServiceSsePushClient;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.BeanUtils;
@@ -44,6 +46,8 @@ public class OrderService {
     private ServiceMapClient serviceMapClient;
     @Autowired
     private RedissonClient redissonClient;
+    @Autowired
+    private ServiceSsePushClient serviceSsePushClient;
 
     /**
      * @param orderRequest
@@ -228,7 +232,11 @@ public class OrderService {
                 orderInfo.setReceiveOrderCarLongitude(terminalResponse.getLongitude());
                 orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
                 orderMapper.updateById(orderInfo);
+                // 向司机推送消息
+                serviceSsePushClient.push(driverId, IdentityConstant.DRIVER_IDENTITY, "");
                 lock.unlock();
+
+
                 return ResponseResult.success();
             }
         }

@@ -25,7 +25,7 @@
 | api-driver               | 8088 |
 | service-order            | 8089 |
 | service-order            | 8090 |
-| sse-driver-client-web    | 8091 |
+| service-sse              | 8091 |
 
 
 

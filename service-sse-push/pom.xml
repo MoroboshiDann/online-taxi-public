@@ -7,7 +7,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>sse-driver-client-web</artifactId>
+    <artifactId>service-sse-push</artifactId>
     <packaging>jar</packaging>
 
     <name>sse-driver-client-web</name>
@@ -20,6 +20,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
         </dependency>
     </dependencies>
 </project>

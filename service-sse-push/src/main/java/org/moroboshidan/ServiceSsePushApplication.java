@@ -2,6 +2,7 @@ package org.moroboshidan;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * @description: 司机哭护短模拟启动类
@@ -9,8 +10,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @time: 2024/3/29 17:53
  */
 @SpringBootApplication
-public class SseDriverClientApplication {
+@EnableDiscoveryClient
+public class ServiceSsePushApplication {
     public static void main(String[] args) {
-        SpringApplication.run(SseDriverClientApplication.class, args);
+        SpringApplication.run(ServiceSsePushApplication.class, args);
     }
 }

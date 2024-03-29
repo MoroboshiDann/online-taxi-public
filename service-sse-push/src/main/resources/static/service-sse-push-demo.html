@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>模拟司机客户端</title>
+    <title>模拟消息接收端</title>
 </head>
 <body>
     <h1>司机监听测试页面</h1>
@@ -11,12 +11,12 @@
     <button onclick="sourceClose()">测试-客户端关闭与服务端map键值对清除</button>
 </body>
 <script>
-    let driverId = 1;
-    let source = new EventSource("http://localhost:8091/connect/" + driverId);
+    let userId = 1;
+    let source = null;
     if (window.EventSource) {
         console.info("此浏览器支持SSE");
         // 连接的建立
-
+        source = new EventSource("http://localhost:8091/connect?userId=" + userId + "&identity=2");
         source.addEventListener("message", function (e) {
             let content = e.data;
             console.info("消息内容：" + content);
@@ -34,7 +34,7 @@
         source.close();
         // 服务端map键值对的消除
         let httpRequest = new XMLHttpRequest();
-        httpRequest.open("get", "http://localhost:8091/close/" + driverId);
+        httpRequest.open("get", "http://localhost:8091/close?userId=" + userId + "&identity=2");
         httpRequest.send();
     }
 </script>

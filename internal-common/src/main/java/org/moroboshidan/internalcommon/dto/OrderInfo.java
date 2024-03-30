@@ -30,7 +30,7 @@ public class OrderInfo implements Serializable {
 
     private Long driverId;
 
-    private String dirverPhone;
+    private String driverPhone;
 
     private Long carId;
 

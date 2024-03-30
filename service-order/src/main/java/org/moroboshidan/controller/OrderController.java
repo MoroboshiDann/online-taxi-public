@@ -26,8 +26,8 @@ public class OrderController {
         return orderService.add(orderRequest);
     }
 
-    @PostMapping("/dispatchOrder/{orderId}")
-    public ResponseResult dispatchOrder(@PathVariable Long orderId) {
-        return orderService.dispatchOrder(orderId);
-    }
+    // @PostMapping("/dispatchOrder/{orderId}")
+    // public ResponseResult dispatchOrder(@PathVariable Long orderId) {
+    //     return orderService.dispatchOrder(orderId);
+    // }
 }

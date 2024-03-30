@@ -2,9 +2,11 @@ package org.moroboshidan.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
 import org.moroboshidan.internalcommon.constant.CommonStatusEnum;
 import org.moroboshidan.internalcommon.constant.IdentityConstant;
 import org.moroboshidan.internalcommon.constant.OrderConstants;
+import org.moroboshidan.internalcommon.dto.Car;
 import org.moroboshidan.internalcommon.dto.OrderInfo;
 import org.moroboshidan.internalcommon.dto.PriceRule;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
@@ -87,20 +89,28 @@ public class OrderService {
         orderInfo.setGmtCreate(now);
         orderInfo.setGmtUpdate(now);
         orderMapper.insert(orderInfo);
+        for (int i = 0; i < 6; i++) {
+            if (dispatchRealTimeOrder(orderInfo)) break;
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         return ResponseResult.success();
     }
 
-    /**
-     * @param orderId
-     * @description: 分发订单
-     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
-     * @author: MoroboshiDan
-     * @time: 2024/3/29 15:01
-     */
-    public ResponseResult dispatchOrder(Long orderId) {
-        OrderInfo orderInfo = orderMapper.selectById(orderId);
-        return dispatchRealTimeOrder(orderInfo);
-    }
+    // /**
+    //  * @param orderId
+    //  * @description: 分发订单
+    //  * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+    //  * @author: MoroboshiDan
+    //  * @time: 2024/3/29 15:01
+    //  */
+    // public ResponseResult dispatchOrder(Long orderId) {
+    //     OrderInfo orderInfo = orderMapper.selectById(orderId);
+    //     return dispatchRealTimeOrder(orderInfo);
+    // }
 
     /**
      * @param cityCode
@@ -183,7 +193,8 @@ public class OrderService {
         return priceRuleExists.getData();
     }
 
-    private ResponseResult dispatchRealTimeOrder(OrderInfo orderInfo) {
+    private boolean dispatchRealTimeOrder(OrderInfo orderInfo) {
+        log.info("循环一次");
         String depLongitude = orderInfo.getDepLongitude();
         String depLatitude = orderInfo.getDepLatitude();
         String center = depLatitude + "," + depLongitude;
@@ -221,7 +232,7 @@ public class OrderService {
                 // 订单匹配司机
                 orderInfo.setCarId(carId);
                 orderInfo.setDriverId(driverId);
-                orderInfo.setDirverPhone(availableDriver.getDriverPhone());
+                orderInfo.setDriverPhone(availableDriver.getDriverPhone());
                 // 查询当前车辆信息和司机信息
                 // 司机和车辆信息，从service-driver-user中获取
                 orderInfo.setVehicleNo(availableDriver.getVehicleNo());
@@ -233,15 +244,37 @@ public class OrderService {
                 orderInfo.setReceiveOrderCarLatitude(terminalResponse.getLatitude());
                 orderMapper.updateById(orderInfo);
                 // 向司机推送消息
-                serviceSsePushClient.push(driverId, IdentityConstant.DRIVER_IDENTITY, "");
+                JSONObject driverContent = new JSONObject();
+                driverContent.put("passengerId", orderInfo.getPassengerId());
+                driverContent.put("passengerPhone", orderInfo.getPassengerPhone());
+                driverContent.put("departure", orderInfo.getDeparture());
+                driverContent.put("depLongitude", orderInfo.getDepLongitude());
+                driverContent.put("depLatitude", orderInfo.getDepLatitude());
+
+                driverContent.put("destination", orderInfo.getDestination());
+                driverContent.put("destLongitude", orderInfo.getDestLongitude());
+                driverContent.put("destLatitude", orderInfo.getDestLatitude());
+                serviceSsePushClient.push(driverId, IdentityConstant.DRIVER_IDENTITY, driverContent.toString());
+
+                // 获取车辆信息，推送给客户
+                Car car = serviceDriverUserClient.getCarById(carId).getData();
+                JSONObject passengerContent = new JSONObject();
+                passengerContent.put("driverId", orderInfo.getDriverId());
+                passengerContent.put("driverPhone", orderInfo.getDriverPhone());
+                passengerContent.put("vehicleNo", orderInfo.getVehicleNo());
+                passengerContent.put("brand", car.getBrand());
+                passengerContent.put("vehicleColor", car.getVehicleColor());
+
+                passengerContent.put("receiveOrderCarLongitude", orderInfo.getReceiveOrderCarLongitude());
+                passengerContent.put("receiveOrderCarLatitude", orderInfo.getReceiveOrderCarLatitude());
+
+                serviceSsePushClient.push(orderInfo.getPassengerId(), IdentityConstant.PASSENGER_IDENTITY, passengerContent.toString());
                 lock.unlock();
-
-
-                return ResponseResult.success();
+                return true;
             }
         }
         log.info("没找到车辆");
-        return ResponseResult.success();
+        return false;
     }
 
 }

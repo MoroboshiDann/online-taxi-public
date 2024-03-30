@@ -4,10 +4,7 @@ import org.moroboshidan.internalcommon.dto.Car;
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.response.OrderDriverResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient("service-driver-user")
 public interface ServiceDriverUserClient {
@@ -19,4 +16,7 @@ public interface ServiceDriverUserClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/get-available-driver/{carId}")
     ResponseResult<OrderDriverResponse> getAvailableDriver(@PathVariable Long carId);
+
+    @GetMapping("/car")
+    ResponseResult<Car> getCarInfoById(Long carId);
 }

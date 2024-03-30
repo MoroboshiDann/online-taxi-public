@@ -33,6 +33,7 @@ public class OrderInfo implements Serializable {
     private String driverPhone;
 
     private Long carId;
+    private String vehicleType;
 
     /**
      * 订单所在地
@@ -161,6 +162,7 @@ public class OrderInfo implements Serializable {
      */
     private Integer orderStatus;
 
+    private Double price;
     private LocalDateTime gmtCreate;
 
     private LocalDateTime gmtUpdate;

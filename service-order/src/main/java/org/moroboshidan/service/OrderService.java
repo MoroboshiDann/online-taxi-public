@@ -221,7 +221,11 @@ public class OrderService {
                 }
                 OrderDriverResponse availableDriver = result.getData();
                 Long driverId = availableDriver.getDriverId();
-
+                String vehicleType = availableDriver.getVehicleType();
+                if (!orderInfo.getVehicleType().equals(vehicleType)) {
+                    log.info("车型不符合");
+                    continue;
+                }
                 String lockKey = (driverId + "").intern();
                 RLock lock = redissonClient.getLock(lockKey);
                 lock.lock();
@@ -347,9 +351,13 @@ public class OrderService {
         Car car = serviceDriverUserClient.getCarById(orderInfo.getCarId()).getData();
         ResponseResult<TerminalSearchResponse> terminalSearchResponseResponseResult = serviceMapClient.terminalSearch(car.getTid(), start.toInstant(ZoneOffset.of("+8")).toEpochMilli(), start.toInstant(ZoneOffset.of("+8")).toEpochMilli());
         TerminalSearchResponse data = terminalSearchResponseResponseResult.getData();
-        orderInfo.setDriveMile(data.getDriveMile());
-        orderInfo.setDriveTime(data.getDriveTime());
+        Long driveMile = data.getDriveMile();
+        Long driveTime = data.getDriveTime();
+        orderInfo.setDriveMile(driveMile);
+        orderInfo.setDriveTime(driveTime);
+        Double price = servicePriceClient.calculatePrice(driveMile, driveTime, orderInfo.getAddress(), orderInfo.getVehicleType()).getData();
+        orderInfo.setPrice(price);
         orderMapper.updateById(orderInfo);
-        return ResponseResult.success();
+        return ResponseResult.success(price);
     }
 }

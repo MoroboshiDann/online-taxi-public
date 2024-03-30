@@ -111,6 +111,6 @@ public class DriverUserService {
         carWrapper.eq(Car::getId, carId);
         Car car = carMapper.selectOne(carWrapper);
 
-        return ResponseResult.success(new OrderDriverResponse(driverUser.getId(), driverUser.getDriverPhone(), carId, driverUser.getLicenseId(), car.getVehicleNo()));
+        return ResponseResult.success(new OrderDriverResponse(driverUser.getId(), driverUser.getDriverPhone(), carId, driverUser.getLicenseId(), car.getVehicleNo(), car.getVehicleType()));
     }
 }

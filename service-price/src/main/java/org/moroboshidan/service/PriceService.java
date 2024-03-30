@@ -15,14 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @Service
-public class ForecastPriceService {
+public class PriceService {
     @Autowired
     private ServiceMapClient serviceMapClient;
     @Autowired
@@ -77,5 +74,15 @@ public class ForecastPriceService {
             throw new RuntimeException(e);
         }
         return price;
+    }
+
+    public ResponseResult calculatePrice(Long distance, Long duration, String cityCode, String vehicleType) {
+        LambdaQueryWrapper<PriceRule> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(PriceRule::getCityCode, cityCode);
+        queryWrapper.eq(PriceRule::getVehicleType, vehicleType);
+        queryWrapper.orderByDesc(PriceRule::getFareVersion);
+        PriceRule priceRule = priceRuleMapper.selectList(queryWrapper).get(0);
+        double price = getPrice(Math.toIntExact(distance), Math.toIntExact(duration), priceRule);
+        return ResponseResult.success(price);
     }
 }

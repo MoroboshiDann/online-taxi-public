@@ -123,7 +123,7 @@ public class OrderInfo implements Serializable {
     /**
      * 司机到达上车地点的时间
      */
-    private LocalDateTime drverAddrivedDepartureTime;
+    private LocalDateTime driverArrivedDepartureTime;
 
     /**
      * 乘客上车时间

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
+    private Long orderId;
     private Long passengerId;
     private String passengerPhone;
     private String address;
@@ -29,4 +30,10 @@ public class OrderRequest {
     private String fareType;
     private Integer fareVersion;
     private String deviceCode;
+    private String toPickUpPassengerLongitude;
+    private String toPickUpPassengerLatitude;
+    private String pickUpPassengerLongitude;
+    private String pickUpPassengerLatitude;
+    private String passengerGetoffLongitude;
+    private String passengerGetoffLatitude;
 }

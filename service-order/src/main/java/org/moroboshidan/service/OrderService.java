@@ -14,6 +14,7 @@ import org.moroboshidan.internalcommon.request.OrderRequest;
 import org.moroboshidan.internalcommon.request.PriceRuleRequest;
 import org.moroboshidan.internalcommon.response.OrderDriverResponse;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
+import org.moroboshidan.internalcommon.response.TerminalSearchResponse;
 import org.moroboshidan.internalcommon.util.RedisUtils;
 import org.moroboshidan.mapper.OrderMapper;
 import org.moroboshidan.remote.ServiceDriverUserClient;
@@ -28,6 +29,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -277,4 +279,77 @@ public class OrderService {
         return false;
     }
 
+    /**
+     * @param orderRequest
+     * @description: 司机出发接乘客，修改订单状态
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/30 14:43
+     */
+    public ResponseResult toPickUpPassenger(OrderRequest orderRequest) {
+        OrderInfo orderInfo = orderMapper.selectById(orderRequest.getOrderId());
+        orderInfo.setToPickUpPassengerAddress(orderRequest.getAddress());
+        orderInfo.setToPickUpPassengerTime(LocalDateTime.now());
+        orderInfo.setToPickUpPassengerLongitude(orderRequest.getToPickUpPassengerLongitude());
+        orderInfo.setToPickUpPassengerLatitude(orderRequest.getToPickUpPassengerLatitude());
+        orderInfo.setOrderStatus(OrderConstants.DRIVER_TO_PICK_UP_PASSENGER);
+        orderMapper.updateById(orderInfo);
+        return ResponseResult.success();
+    }
+
+    /**
+     * @param orderRequest
+     * @description: 司机到达出发地点，修改订单状态
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/30 14:51
+     */
+    public ResponseResult driverArrivedDeparture(OrderRequest orderRequest) {
+        OrderInfo orderInfo = orderMapper.selectById(orderRequest.getOrderId());
+        orderInfo.setDriverArrivedDepartureTime(LocalDateTime.now());
+        orderInfo.setOrderStatus(OrderConstants.DRIVER_ARRIVE_DEPARTURE);
+        orderMapper.updateById(orderInfo);
+        return ResponseResult.success();
+    }
+
+    /**
+     * @param orderRequest
+     * @description: 乘客上车
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/30 15:00
+     */
+    public ResponseResult pickUpPassenger(OrderRequest orderRequest) {
+        OrderInfo orderInfo = orderMapper.selectById(orderRequest.getOrderId());
+        orderInfo.setPickUpPassengerLongitude(orderInfo.getPickUpPassengerLongitude());
+        orderInfo.setPickUpPassengerLatitude(orderInfo.getPickUpPassengerLatitude());
+        orderInfo.setPickUpPassengerTime(LocalDateTime.now());
+        orderInfo.setOrderStatus(OrderConstants.PICK_UP_PASSENGER);
+        orderMapper.updateById(orderInfo);
+        return ResponseResult.success();
+    }
+
+    /**
+     * @description: 乘客下车
+     * @param orderRequest
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/30 15:20
+     */
+    public ResponseResult passengerGetoff(OrderRequest orderRequest) {
+        OrderInfo orderInfo = orderMapper.selectById(orderRequest.getOrderId());
+        orderInfo.setPassengerGetoffLongitude(orderRequest.getPassengerGetoffLongitude());
+        orderInfo.setPassengerGetoffLatitude(orderRequest.getPassengerGetoffLatitude());
+        LocalDateTime end = LocalDateTime.now();
+        LocalDateTime start = orderInfo.getPickUpPassengerTime();
+        orderInfo.setPassengerGetoffTime(end);
+        orderInfo.setOrderStatus(OrderConstants.PASSENGER_GETOFF);
+        Car car = serviceDriverUserClient.getCarById(orderInfo.getCarId()).getData();
+        ResponseResult<TerminalSearchResponse> terminalSearchResponseResponseResult = serviceMapClient.terminalSearch(car.getTid(), start.toInstant(ZoneOffset.of("+8")).toEpochMilli(), start.toInstant(ZoneOffset.of("+8")).toEpochMilli());
+        TerminalSearchResponse data = terminalSearchResponseResponseResult.getData();
+        orderInfo.setDriveMile(data.getDriveMile());
+        orderInfo.setDriveTime(data.getDriveTime());
+        orderMapper.updateById(orderInfo);
+        return ResponseResult.success();
+    }
 }

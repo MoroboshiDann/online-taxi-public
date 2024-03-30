@@ -11,6 +11,7 @@ public class AmapConfigConstants {
     public static final String TRACK_ADD_URL = "https://tsapi.amap.com/v1/track/trace/add";
     public static final String TRACK_POINTS_ADD_URL = "https://tsapi.amap.com/v1/track/point/upload";
     public static final String TERMINAL_AROUND_SEARCH_URL = "https://tsapi.amap.com/v1/track/terminal/aroundsearch";
+    public static final String TERMINAL_SEARCH_URL = "https://tsapi.amap.com/v1/track/terminal/trsearch";
     /**
      * 路径规划json key值
      */

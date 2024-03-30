@@ -2,6 +2,7 @@ package org.moroboshidan.service;
 
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
+import org.moroboshidan.internalcommon.response.TerminalSearchResponse;
 import org.moroboshidan.remote.TerminalClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,5 +32,9 @@ public class TerminalService {
      */
     public ResponseResult<List<TerminalResponse>> aroundSearch(String center, Integer radius) {
         return terminalClient.aroundSearch(center, radius);
+    }
+
+    public ResponseResult<TerminalSearchResponse> terminalSearch(String tid, Long starttime, Long endtime) {
+        return terminalClient.terminalSearch(tid, starttime, endtime);
     }
 }

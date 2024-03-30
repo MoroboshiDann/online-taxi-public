@@ -2,6 +2,7 @@ package org.moroboshidan.controller;
 
 import org.moroboshidan.internalcommon.dto.ResponseResult;
 import org.moroboshidan.internalcommon.response.TerminalResponse;
+import org.moroboshidan.internalcommon.response.TerminalSearchResponse;
 import org.moroboshidan.service.TerminalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,5 +38,19 @@ public class TerminalController {
     @PostMapping("/aroundsearch")
     public ResponseResult<List<TerminalResponse>> aroundSearch(@RequestParam String center, @RequestParam Integer radius) {
         return terminalService.aroundSearch(center, radius);
+    }
+
+    /**
+     * @description: 查询轨迹结果，获取行驶路程和时间
+     * @param tid
+     * @param starttime
+     * @param endtime
+     * @return: org.moroboshidan.internalcommon.dto.ResponseResult
+     * @author: MoroboshiDan
+     * @time: 2024/3/30 15:48
+     */
+    @PostMapping("/terminal-search")
+    public ResponseResult<TerminalSearchResponse> terminalSearch(String tid, Long starttime, Long endtime) {
+        return terminalService.terminalSearch(tid, starttime, endtime);
     }
 }

@@ -27,5 +27,19 @@
 | service-order            | 8090 |
 | service-sse              | 8091 |
 
+## 安全问题
+
+### 三级等保
+
+- CIA: 保密性，完整性，可用性
+  - 手机号，身份证号等脱敏
+- 数据层面：sql注入，xss，csrf人机交互token
+  - 过滤框架，如jsoup
+  - spring的HtmlUtils来解决
+  - referer
+- 权限控制
+
+
+
 
 
